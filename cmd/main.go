@@ -1,19 +1,17 @@
 package main
 
-/*
-#cgo LDFLAGS: -lpthread
-*/
 import (
 	"database/sql"
 	"errors"
 	"fmt"
 	_ "github.com/marcboeker/go-duckdb/v2"
+	"go-db-etl/pkg/config"
 	"go-db-etl/pkg/logging"
 	"log"
 )
 
 func main() {
-	logging.EtlLogger.Info("Starting go-db-etl")
+	logging.EtlLogger.Info("Starting " + config.Config.Name)
 
 	db, err := sql.Open("duckdb", "")
 	if err != nil {
@@ -35,6 +33,7 @@ func main() {
 		name string
 	)
 	row := db.QueryRow(`SELECT id, name FROM people`)
+
 	err = row.Scan(&id, &name)
 	if errors.Is(err, sql.ErrNoRows) {
 		log.Println("no rows")

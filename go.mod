@@ -2,7 +2,10 @@ module go-db-etl
 
 go 1.24.0
 
-require github.com/marcboeker/go-duckdb/v2 v2.2.0
+require (
+	github.com/joho/godotenv v1.5.1
+	github.com/marcboeker/go-duckdb/v2 v2.2.0
+)
 
 require (
 	github.com/apache/arrow-go/v18 v18.1.0 // indirect

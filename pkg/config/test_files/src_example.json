@@ -1,0 +1,25 @@
+{
+  "SrcSys": [
+    {
+      "Name": "Sys1",
+      "Enabled": true,
+      "Username": "username1",
+      "Password" : "password1",
+      "SystemType": "postgres",
+      "Address": "127.0.0.1",
+      "Port": 5432
+    }
+  ],
+  "SrcTable": [
+    {
+      "Name": "Table1",
+      "SrcSys": "Sys1",
+      "Enabled": true
+    },
+    {
+      "Name": "Table2",
+      "SrcSys": "Sys2",
+      "Enabled": false
+    }
+  ]
+}
