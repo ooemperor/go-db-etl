@@ -21,7 +21,7 @@ func TestSourceConfig(t *testing.T) {
 		t.Fatalf("length of tables host should be 2 but got %v", len(srcTables))
 	}
 
-	if len(srcSys) != 1 {
-		t.Fatalf("length of systems host should be 1 but got %v", len(srcSys))
+	if len(srcSys) != 2 {
+		t.Fatalf("length of systems host should be 2 but got %v", len(srcSys))
 	}
 }

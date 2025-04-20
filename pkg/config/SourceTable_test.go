@@ -16,7 +16,7 @@ func TestSourceTableLoad(t *testing.T) {
 
 	var srcSys = srcConfig.SrcTable[0]
 
-	if srcSys.SrcSys != "Sys1" {
+	if srcSys.SrcSys != "mssql1" {
 		t.Fatalf("Error on SourceSys.SrcSys: %v", srcSys.SrcSys)
 	}
 

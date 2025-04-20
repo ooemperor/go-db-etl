@@ -16,6 +16,19 @@ type SourceConfig struct {
 }
 
 /*
+GetActiveSystems
+*/
+func (sc *SourceConfig) GetActiveSystems() []*SourceSystem {
+	var activeSystems []*SourceSystem
+	for _, s := range sc.SrcSys {
+		if s.Enabled {
+			activeSystems = append(activeSystems, s)
+		}
+	}
+	return activeSystems
+}
+
+/*
 setTableForSys updates the srcTables for all the srcSystems after the initial load
 */
 func (sc *SourceConfig) setTableForSys() {
