@@ -56,14 +56,54 @@ func (sys *SourceSystem) Load() error {
 		}
 
 		//result, err := db.Exec(sqlCmd)
-		_, err = db.Query(sqlCmd)
+		rows, err := db.Query(sqlCmd)
 		if err != nil {
 			tableErrors += 1
 			logging.EtlLogger.Warning("Error while loading table " + table.Name + ": " + err.Error())
+			continue
 		}
 
-		// TODO: now need to define the processing of the result.
-		// TODO: then insert into target
+		var rowOutput []map[string]interface{}
+		columns, _ := rows.Columns()
+		columnTypes, _ := rows.ColumnTypes()
+		// Holds raw data
+		values := make([]interface{}, len(columns)) // Holds raw data
+		args := make([]interface{}, len(columns))   // Pointers to values
+
+		for i := range columns {
+			args[i] = &values[i] // Each pointer will point to a value
+		}
+
+		for rows.Next() {
+
+			// construct my
+			err = rows.Scan(args...)
+			if err != nil {
+				logging.EtlLogger.Warning("Error while loading table " + table.Name + ": " + err.Error())
+				tableErrors += 1
+				continue
+			}
+			// prepare temp map to hold the result of the san
+			rowData := make(map[string]interface{}) // Dynamic row structure
+
+			for i, col := range columns {
+				var v interface{}
+				val := values[i]
+
+				// Convert []byte to string if needed
+				b, ok := val.([]byte)
+				if ok {
+					v = string(b)
+				} else {
+					v = val
+				}
+
+				rowData[col] = v
+			}
+			fmt.Println(rowData)
+
+			rowOutput = append(rowOutput, rowData)
+		}
 
 	}
 
