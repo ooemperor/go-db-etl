@@ -65,7 +65,6 @@ func (sys *SourceSystem) Load() error {
 
 		var rowOutput []map[string]interface{}
 		columns, _ := rows.Columns()
-		columnTypes, _ := rows.ColumnTypes()
 		// Holds raw data
 		values := make([]interface{}, len(columns)) // Holds raw data
 		args := make([]interface{}, len(columns))   // Pointers to values
