@@ -30,5 +30,15 @@
       "SrcSys": "postgres1",
       "Enabled": false
     }
-  ]
+  ],
+  "Target": {
+    "Name": "postgresTarget",
+    "Enabled": true,
+    "Username": "targetUsername",
+    "Password" : "targetPassword",
+    "Database": "INB",
+    "Driver": "postgres",
+    "Address": "127.0.0.1",
+    "Port": 5432
+  }
 }

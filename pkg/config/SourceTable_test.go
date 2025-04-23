@@ -14,17 +14,27 @@ func TestSourceTableLoad(t *testing.T) {
 		t.Fatalf("Error on BuildSourceConfig: %v", err)
 	}
 
-	var srcSys = srcConfig.SrcTable[0]
+	var srcTable = srcConfig.SrcTable[0]
 
-	if srcSys.SrcSys != "mssql1" {
-		t.Fatalf("Error on SourceSys.SrcSys: %v", srcSys.SrcSys)
+	if srcTable.SrcSys != "mssql1" {
+		t.Fatalf("Error on SourceSys.SrcSys: %v", srcTable.SrcSys)
 	}
 
-	if srcSys.Name != "Table1" {
-		t.Fatalf("Error on SourceSys.Name: %v", srcSys.Name)
+	if srcTable.Name != "Table1" {
+		t.Fatalf("Error on SourceSys.Name: %v", srcTable.Name)
 	}
 
-	if srcSys.Enabled != true {
-		t.Fatalf("Error on SourceSys.Enabled: %v", srcSys.Enabled)
+	if srcTable.Enabled != true {
+		t.Fatalf("Error on SourceSys.Enabled: %v", srcTable.Enabled)
 	}
+}
+
+func TestSourceTableLoadFromFile(t *testing.T) {
+	var srcConfig, err = BuildSourceConfig("./test_files/src_example.json")
+
+	if err != nil {
+		t.Fatalf("Error on BuildSourceConfig: %v", err)
+	}
+
+	var _ = srcConfig.SrcTable[0]
 }

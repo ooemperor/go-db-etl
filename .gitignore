@@ -7,6 +7,7 @@
 *.dll
 *.so
 *.dylib
+*.test.json
 
 #output folder for builds
 bin

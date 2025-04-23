@@ -13,10 +13,11 @@ SourceConfig definition of the struct
 type SourceConfig struct {
 	SrcSys   []*SourceSystem
 	SrcTable []*SourceTable
+	Target   *System
 }
 
 /*
-GetActiveSystems
+GetActiveSystems Fetches the active systems from the source config
 */
 func (sc *SourceConfig) GetActiveSystems() []*SourceSystem {
 	var activeSystems []*SourceSystem

@@ -1,4 +1,12 @@
 {
   "SrcSys": [],
-  "SrcTable": []
+  "SrcTable": [],
+  "Target": {
+    "Name": "",
+    "Username": "",
+    "Password": "",
+    "Driver": "postgres",
+    "Address": "",
+    "Port": 5432
+  }
 }

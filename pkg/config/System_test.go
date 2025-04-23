@@ -51,7 +51,7 @@ func TestSourceSystemLoad(t *testing.T) {
 }
 
 func TestSourceSystemMsSqlQueryString(t *testing.T) {
-	srcSys := SourceSystem{
+	srcSys := System{
 		Name:     "mssql",
 		Database: "exampleDB",
 		Enabled:  true,
@@ -73,7 +73,7 @@ func TestSourceSystemMsSqlQueryString(t *testing.T) {
 }
 
 func TestSourceSystemPostgresQueryString(t *testing.T) {
-	srcSys := SourceSystem{
+	srcSys := System{
 		Name:     "postgres1",
 		Database: "exampleDB",
 		Enabled:  true,
@@ -89,13 +89,13 @@ func TestSourceSystemPostgresQueryString(t *testing.T) {
 		t.Fatalf("Error on GetConnectionString: %v", err)
 	}
 
-	if selectSTring != "postgres://usernamepostgres:passwordpostgres@127.0.0.1:5432/exampleDB" {
+	if selectSTring != "postgres://usernamepostgres:passwordpostgres@127.0.0.1:5432/exampleDB?sslmode=disable" {
 		t.Fatalf("Error on GetConnectionString: %v", selectSTring)
 	}
 }
 
 func TestSourceSystemInvalidDriver(t *testing.T) {
-	srcSys := SourceSystem{
+	srcSys := System{
 		Name:     "postgres1",
 		Database: "exampleDB",
 		Enabled:  true,
