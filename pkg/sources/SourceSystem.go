@@ -1,4 +1,4 @@
-package config
+package sources
 
 import (
 	"database/sql"
@@ -47,63 +47,12 @@ func (sys *SourceSystem) Load() error {
 
 	for i, table := range activeTables {
 		logging.EtlLogger.Info(fmt.Sprintf("[%d / %d] Loading table %s", i, tableCount, table.Name))
-
-		sqlCmd, err := table.GetSelectQuery()
+		err := table.Load(db)
+		// catch the error and return it
+		// logging the specficic error is done on the table level.
 		if err != nil {
 			tableErrors += 1
-			logging.EtlLogger.Warning("Error while loading table " + table.Name + ": " + err.Error())
-			continue
 		}
-
-		//result, err := db.Exec(sqlCmd)
-		rows, err := db.Query(sqlCmd)
-		if err != nil {
-			tableErrors += 1
-			logging.EtlLogger.Warning("Error while loading table " + table.Name + ": " + err.Error())
-			continue
-		}
-
-		var rowOutput []map[string]interface{}
-		columns, _ := rows.Columns()
-		// Holds raw data
-		values := make([]interface{}, len(columns)) // Holds raw data
-		args := make([]interface{}, len(columns))   // Pointers to values
-
-		for i := range columns {
-			args[i] = &values[i] // Each pointer will point to a value
-		}
-
-		for rows.Next() {
-
-			// construct my
-			err = rows.Scan(args...)
-			if err != nil {
-				logging.EtlLogger.Warning("Error while loading table " + table.Name + ": " + err.Error())
-				tableErrors += 1
-				continue
-			}
-			// prepare temp map to hold the result of the san
-			rowData := make(map[string]interface{}) // Dynamic row structure
-
-			for i, col := range columns {
-				var v interface{}
-				val := values[i]
-
-				// Convert []byte to string if needed
-				b, ok := val.([]byte)
-				if ok {
-					v = string(b)
-				} else {
-					v = val
-				}
-
-				rowData[col] = v
-			}
-			fmt.Println(rowData)
-
-			rowOutput = append(rowOutput, rowData)
-		}
-
 	}
 
 	if tableErrors > 0 {

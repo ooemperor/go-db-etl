@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/joho/godotenv"
+	"go-db-etl/pkg/sources"
 	"os"
 	"strconv"
 )
@@ -35,4 +36,4 @@ Config Export the Config object
 */
 var Config, _ = (&(Configuration{})).Init(".env")
 
-var SourceConfiguration, _ = BuildSourceConfig("src.json")
+var SourceConfiguration, _ = sources.BuildSourceConfig("src.json")

@@ -2,21 +2,21 @@ package runner
 
 import (
 	"fmt"
-	"go-db-etl/pkg/config"
 	"go-db-etl/pkg/logging"
+	"go-db-etl/pkg/sources"
 )
 
 /*
 Runner defines the object of the runner that will go and execute all the Operations
 */
 type Runner struct {
-	sourceConfig *config.SourceConfig
+	sourceConfig *sources.SourceConfig
 }
 
 /*
 Init initilizes the runner with all its attributes
 */
-func (runner *Runner) Init(sourceConfig *config.SourceConfig) {
+func (runner *Runner) Init(sourceConfig *sources.SourceConfig) {
 	runner.sourceConfig = sourceConfig
 }
 

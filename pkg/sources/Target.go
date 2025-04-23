@@ -1,4 +1,4 @@
-package config
+package sources
 
 /*
 Target definition of the struct

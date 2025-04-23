@@ -1,6 +1,8 @@
-package config
+package sources
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestTargetPostgresQueryString(t *testing.T) {
 	s := System{
