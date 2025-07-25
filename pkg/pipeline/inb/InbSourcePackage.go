@@ -1,14 +1,22 @@
 package inb
 
-import "github.com/teambenny/goetl"
+import (
+	"github.com/teambenny/goetl"
+	"go-db-etl/pkg/logging"
+)
 
-type InbSourcePackage struct {
-	tablePipelines []goetl.PipelineIface
+type SourcePackage struct {
+	tablePipelines []*goetl.Pipeline
 }
 
-func (srcP InbSourcePackage) Run() error {
+func (srcP SourcePackage) Run() error {
 	for _, tablePipeline := range srcP.tablePipelines {
-		tablePipeline.Run()
+		tablePipeline.PrintData = true
+		c := <-tablePipeline.Run()
+		if c != nil {
+			logging.EtlLogger.Info(c.Error(), tablePipeline.Stats())
+		}
+
 	}
 	return nil
 }

@@ -2,33 +2,26 @@ package inb
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/teambenny/goetl"
 	"github.com/teambenny/goetl/processors"
 	"go-db-etl/pkg/sources"
 )
 
-type InbTablePipelineBuilder struct {
-	db    *sql.DB
-	table *sources.SourceTable
+type TablePipelineBuilder struct {
+	sourceDb *sql.DB
+	targetDb *sql.DB
+	table    *sources.SourceTable
 }
 
-func (inb *InbTablePipelineBuilder) Build() (goetl.PipelineIface, error) {
+func (inb *TablePipelineBuilder) Build() *goetl.Pipeline {
 	queryString, _ := inb.table.GetSelectQuery()
-	loader1 := processors.NewSQLReader(inb.db, queryString)
-	inserter1 := processors.NewPostgreSQLWriter(inb.db, inb.table.Name+inb.table.SrcSys)
+	fmt.Println(queryString)
+	destinationTable := inb.table.Name + "_" + inb.table.SrcSys
+	fmt.Println(destinationTable)
+	reader := processors.NewSQLReader(inb.sourceDb, queryString)
+	writer := processors.NewPostgreSQLWriter(inb.targetDb, destinationTable)
 
-	stage1 := goetl.NewPipelineStage(goetl.Do(loader1).Outputs(inserter1))
-	stage2 := goetl.NewPipelineStage(goetl.Do(inserter1))
-
-	layout, err := goetl.NewPipelineLayout(
-		stage1,
-		stage2,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	pipeline := goetl.NewBranchingPipeline(layout)
-	return pipeline, nil
+	pipeline := goetl.NewPipeline(reader, writer)
+	return pipeline
 }
