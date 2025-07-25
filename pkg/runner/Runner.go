@@ -34,13 +34,20 @@ func (runner *Runner) Run() {
 	for i, system := range sourceSystems {
 		logging.EtlLogger.Info(fmt.Sprintf("Running system %d %v", i, system.System.Name))
 		// now execute the system load.
-		builder := inb.NewInbSystemWrapper(system)
-		srcPackage, err := builder.Build()
+		sysPack := inb.NewSystemPackage(system)
+		err := sysPack.Build()
 		if err != nil {
-			logging.EtlLogger.Error("Error building pipeline for " + system.Name)
+			logging.EtlLogger.Error("Error building package for " + system.Name)
 			continue
 		}
-		_ = srcPackage.Run()
+		err = sysPack.Run()
+
+		if err != nil {
+			if err != nil {
+				logging.EtlLogger.Error("Error running package for " + system.Name)
+				continue
+			}
+		}
 	}
 
 }
