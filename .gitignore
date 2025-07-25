@@ -8,6 +8,7 @@
 *.so
 *.dylib
 *.test.json
+*.test.yml
 
 #output folder for builds
 bin

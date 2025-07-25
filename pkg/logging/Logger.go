@@ -21,8 +21,12 @@ type Logger struct{}
 /*
 Info logs an information message and continues operation
 */
-func (l *Logger) Info(message string) {
-	log.Println("INFO: " + message)
+func (l *Logger) Info(message ...string) {
+	output := "INFO: "
+	for _, msg := range message {
+		output += msg + " "
+	}
+	log.Println(output)
 }
 
 /*
