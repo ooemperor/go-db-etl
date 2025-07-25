@@ -23,7 +23,7 @@ func (srcP *SystemPackage) Run() error {
 	if len(srcP.pipelines) == 0 {
 		msg := fmt.Sprintf("no pipelines found for SystemPackage %s", srcP.system.Name)
 		logging.EtlLogger.Error(msg)
-		return fmt.Errorf(msg)
+		return fmt.Errorf(msg, nil)
 	}
 
 	for _, tablePipeline := range srcP.pipelines {
