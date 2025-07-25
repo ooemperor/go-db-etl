@@ -3,6 +3,7 @@ package runner
 import (
 	"fmt"
 	"go-db-etl/pkg/logging"
+	"go-db-etl/pkg/pipeline/inb"
 	"go-db-etl/pkg/sources"
 )
 
@@ -33,7 +34,13 @@ func (runner *Runner) Run() {
 	for i, system := range sourceSystems {
 		logging.EtlLogger.Info(fmt.Sprintf("Running system %d %v", i, system.System.Name))
 		// now execute the system load.
-		_ = system.Load()
+		builder := inb.NewInbSystemWrapper(system)
+		srcPackage, err := builder.Build()
+		if err != nil {
+			logging.EtlLogger.Error("Error building pipeline for " + system.Name)
+			continue
+		}
+		_ = srcPackage.Run()
 	}
 
 }

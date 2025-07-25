@@ -1,4 +1,4 @@
-package pipeline
+package inb
 
 import (
 	"database/sql"
@@ -7,12 +7,12 @@ import (
 	"go-db-etl/pkg/sources"
 )
 
-type InbPipeline struct {
+type InbTablePipelineBuilder struct {
 	db    *sql.DB
-	table sources.SourceTable
+	table *sources.SourceTable
 }
 
-func (inb *InbPipeline) Build() error {
+func (inb *InbTablePipelineBuilder) Build() (goetl.PipelineIface, error) {
 	queryString, _ := inb.table.GetSelectQuery()
 	loader1 := processors.NewSQLReader(inb.db, queryString)
 	inserter1 := processors.NewPostgreSQLWriter(inb.db, inb.table.Name+inb.table.SrcSys)
@@ -26,10 +26,9 @@ func (inb *InbPipeline) Build() error {
 	)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	pipeline := goetl.NewBranchingPipeline(layout)
-	pipeline.Run()
-	return nil
+	return pipeline, nil
 }
