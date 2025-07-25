@@ -1,10 +1,10 @@
 package main
 
 import (
-	"go-db-etl/pkg/config"
-	"go-db-etl/pkg/logging"
-	"go-db-etl/pkg/runner"
-	"go-db-etl/pkg/sources"
+	"gihub.com/ooemperor/go-db-etl/pkg/config"
+	"gihub.com/ooemperor/go-db-etl/pkg/logging"
+	"gihub.com/ooemperor/go-db-etl/pkg/runner"
+	"gihub.com/ooemperor/go-db-etl/pkg/sources"
 )
 
 func main() {

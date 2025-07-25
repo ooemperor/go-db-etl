@@ -1,4 +1,4 @@
-module go-db-etl
+module gihub.com/ooemperor/go-db-etl
 
 go 1.24.0
 
