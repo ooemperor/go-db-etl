@@ -1,8 +1,8 @@
 package config
 
 import (
+	"gihub.com/ooemperor/go-db-etl/pkg/sources"
 	"github.com/joho/godotenv"
-	"go-db-etl/pkg/sources"
 	"os"
 	"strconv"
 )
