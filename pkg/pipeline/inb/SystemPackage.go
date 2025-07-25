@@ -3,8 +3,8 @@ package inb
 import (
 	"database/sql"
 	"fmt"
-	"gihub.com/ooemperor/go-db-etl/pkg/logging"
-	"gihub.com/ooemperor/go-db-etl/pkg/sources"
+	"github.com/ooemperor/go-db-etl/pkg/logging"
+	"github.com/ooemperor/go-db-etl/pkg/sources"
 	"github.com/teambenny/goetl"
 )
 

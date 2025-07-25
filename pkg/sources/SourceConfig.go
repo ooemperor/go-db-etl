@@ -3,7 +3,7 @@ package sources
 import (
 	"encoding/json"
 	"fmt"
-	"gihub.com/ooemperor/go-db-etl/pkg/logging"
+	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"os"
 )
 
