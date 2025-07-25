@@ -2,9 +2,9 @@ package runner
 
 import (
 	"fmt"
-	"gihub.com/ooemperor/go-db-etl/pkg/logging"
-	"gihub.com/ooemperor/go-db-etl/pkg/pipeline/inb"
-	"gihub.com/ooemperor/go-db-etl/pkg/sources"
+	"github.com/ooemperor/go-db-etl/pkg/logging"
+	"github.com/ooemperor/go-db-etl/pkg/pipeline/inb"
+	"github.com/ooemperor/go-db-etl/pkg/sources"
 )
 
 /*
