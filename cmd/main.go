@@ -18,9 +18,9 @@ func main() {
 	}
 
 	// TODO: INSERT pre run output here
-	runner := runner.Runner{}
-	runner.Init(srcConfig)
+	r := runner.Runner{}
+	r.Init(srcConfig)
 
-	runner.Run()
+	r.Run()
 
 }
