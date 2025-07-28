@@ -29,7 +29,9 @@ func (inb *SrcTablePipelineBuilder) Build() *goetl.Pipeline {
 	truncator := processors.NewSQLExecutor(inb.targetDb, truncateQuery)
 
 	reader := processors.NewSQLReader(inb.sourceDb, queryString)
+	reader.BatchSize = -1
 	writer := processors.NewPostgreSQLWriter(inb.targetDb, destinationTable)
+	writer.BatchSize = 1000
 	writer.OnDupKeyUpdate = false
 
 	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writer), goetl.Do(reader).Outputs(writer))
