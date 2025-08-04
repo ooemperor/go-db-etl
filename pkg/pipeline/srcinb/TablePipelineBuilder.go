@@ -1,4 +1,4 @@
-package inb
+package srcinb
 
 import (
 	"database/sql"
@@ -13,24 +13,24 @@ import (
 SrcTablePipelineBuilder constructs a simple data Pipeline for loading a single table.
 */
 type SrcTablePipelineBuilder struct {
-	sourceDb *sql.DB
-	targetDb *sql.DB
-	table    *sources.SourceTable
+	SourceDb *sql.DB
+	TargetDb *sql.DB
+	Table    *sources.SourceTable
 }
 
 /*
 Build constructs the Pipeline for a given table
 */
 func (inb *SrcTablePipelineBuilder) Build() *goetl.Pipeline {
-	queryString, _ := inb.table.GetSelectQuery()
-	destinationTable := inb.table.Name + "_" + inb.table.SrcSys
+	queryString, _ := inb.Table.GetSelectQuery()
+	destinationTable := inb.Table.Name + "_" + inb.Table.SrcSys
 	truncateQuery := fmt.Sprintf("TRUNCATE TABLE %s;", destinationTable)
 
-	truncator := processors.NewSQLExecutor(inb.targetDb, truncateQuery)
+	truncator := processors.NewSQLExecutor(inb.TargetDb, truncateQuery)
 
-	reader := processors.NewSQLReader(inb.sourceDb, queryString)
+	reader := processors.NewSQLReader(inb.SourceDb, queryString)
 	reader.BatchSize = -1
-	writer := processors.NewPostgreSQLWriter(inb.targetDb, destinationTable)
+	writer := processors.NewPostgreSQLWriter(inb.TargetDb, destinationTable)
 	writer.BatchSize = 1000
 	writer.OnDupKeyUpdate = false
 
@@ -39,7 +39,7 @@ func (inb *SrcTablePipelineBuilder) Build() *goetl.Pipeline {
 
 	layout, err := goetl.NewPipelineLayout(truncateAndReadStage, writerStage)
 	if err != nil {
-		logging.EtlLogger.Info("Error in layout of pipeline for: " + destinationTable + " " + inb.table.SrcSys)
+		logging.EtlLogger.Info("Error in layout of pipeline for: " + destinationTable + " " + inb.Table.SrcSys)
 		logging.EtlLogger.Error(err.Error())
 	}
 

@@ -21,9 +21,9 @@ type Logger struct{}
 /*
 Info logs an information message and continues operation
 */
-func (l *Logger) Info(message ...string) {
+func (l *Logger) Info(messages ...string) {
 	output := "INFO: "
-	for _, msg := range message {
+	for _, msg := range messages {
 		output += msg + " "
 	}
 	log.Println(output)
@@ -32,15 +32,23 @@ func (l *Logger) Info(message ...string) {
 /*
 Warning logs an error message and continues operation
 */
-func (l *Logger) Warning(message string) {
-	log.Println("WARNING: " + message)
+func (l *Logger) Warning(messages ...string) {
+	output := "WARNING: "
+	for _, msg := range messages {
+		output += msg + " "
+	}
+	log.Println(output)
 }
 
 /*
 Error logs an error message and exits by raising fatal error
 */
-func (l *Logger) Error(message string) {
-	log.Fatalln("Error: " + message)
+func (l *Logger) Error(messages ...string) {
+	output := "ERROR: "
+	for _, msg := range messages {
+		output += msg + " "
+	}
+	log.Fatalln(output)
 }
 
 // EtlLogger creation and export of single logger message

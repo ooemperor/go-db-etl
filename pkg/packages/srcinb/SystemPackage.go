@@ -1,9 +1,10 @@
-package inb
+package srcinb
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/ooemperor/go-db-etl/pkg/logging"
+	"github.com/ooemperor/go-db-etl/pkg/pipeline/srcinb"
 	"github.com/ooemperor/go-db-etl/pkg/sources"
 	"github.com/teambenny/goetl"
 )
@@ -30,7 +31,7 @@ func (srcP *SystemPackage) Run() error {
 		tablePipeline.PrintData = true
 		c := <-tablePipeline.Run()
 		if c != nil {
-			logging.EtlLogger.Info(c.Error(), tablePipeline.Stats())
+			logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
 		}
 	}
 	return nil
@@ -43,7 +44,7 @@ func (srcP *SystemPackage) Build() error {
 	db, _ := sql.Open(srcP.system.Driver, connectionString)
 	targetDb, _ := sql.Open(srcP.system.Driver, "postgres://targetUsername:targetPassword@127.0.0.1:5678/INB?sslmode=disable")
 	for _, table := range tables {
-		pipeBuilder := SrcTablePipelineBuilder{sourceDb: db, targetDb: targetDb, table: table}
+		pipeBuilder := srcinb.SrcTablePipelineBuilder{SourceDb: db, TargetDb: targetDb, Table: table}
 		pipeLine := pipeBuilder.Build()
 		srcP.pipelines = append(srcP.pipelines, pipeLine)
 	}
