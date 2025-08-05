@@ -17,6 +17,10 @@ type SystemPackage struct {
 	system    *sources.SourceSystem
 }
 
+func (srcP *SystemPackage) Name() string {
+	return srcP.system.Name
+}
+
 /*
 Run executes the given SystemPackage
 */
@@ -28,7 +32,6 @@ func (srcP *SystemPackage) Run() error {
 	}
 
 	for _, tablePipeline := range srcP.pipelines {
-		tablePipeline.PrintData = true
 		c := <-tablePipeline.Run()
 		if c != nil {
 			logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
