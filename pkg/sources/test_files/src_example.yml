@@ -1,0 +1,32 @@
+---
+SrcSys:
+  - mssql1:
+      enabled: true
+      username: username1
+      password: password1
+      driver: postgres
+      address: 127.0.0.1
+      port: 5432
+      tables:
+        - table1
+        - table2
+
+  - postgres1:
+      enabled: true
+      username: username1
+      password: password1
+      driver: postgres
+      address: 127.0.0.1
+      port: 5432
+      tables:
+        - Table2
+
+Target:
+  name: postgresTarget
+  enabled: true
+  username: targetUsername
+  password: targetPassword
+  database: INB
+  driver: postgres
+  address: 127.0.0.1
+  port: 5432

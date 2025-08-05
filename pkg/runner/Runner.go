@@ -5,7 +5,6 @@ import (
 	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"github.com/ooemperor/go-db-etl/pkg/packages/srcinb"
 	"github.com/ooemperor/go-db-etl/pkg/sources"
-	"github.com/teambenny/goetl/logger"
 )
 
 /*
@@ -31,14 +30,14 @@ func (runner *Runner) Run() {
 	}
 
 	// setting the loglevel of the goetl module
-	logger.LogLevel = 4
+	// logger.LogLevel = 4
 
 	sourceSystems := runner.sourceConfig.GetActiveSystems()
 
 	sysPackages := make([]*srcinb.SystemPackage, 0)
 	logging.EtlLogger.Info("START Building systems")
 	for i, system := range sourceSystems {
-		logging.EtlLogger.Info(fmt.Sprintf("Building system %d %v", i, system.System.Name))
+		logging.EtlLogger.Info(fmt.Sprintf("Building system %d %v", i, system.Name))
 		// now execute the system load.
 		sysPack := srcinb.NewSystemPackage(system)
 		err := sysPack.Build()
