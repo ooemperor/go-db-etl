@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+
 	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"github.com/ooemperor/go-db-etl/pkg/packages/srcinb"
 	"github.com/ooemperor/go-db-etl/pkg/sources"
@@ -39,7 +40,7 @@ func (runner *Runner) Run() {
 	for i, system := range sourceSystems {
 		logging.EtlLogger.Info(fmt.Sprintf("Building system %d %v", i, system.Name))
 		// now execute the system load.
-		sysPack := srcinb.NewSystemPackage(system)
+		sysPack := srcinb.NewSystemPackage(system, runner.sourceConfig.Target)
 		err := sysPack.Build()
 		sysPackages = append(sysPackages, sysPack)
 		if err != nil {

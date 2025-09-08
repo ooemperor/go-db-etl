@@ -3,6 +3,7 @@ package srcinb
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"github.com/ooemperor/go-db-etl/pkg/pipeline/srcinb"
 	"github.com/ooemperor/go-db-etl/pkg/sources"
@@ -15,6 +16,7 @@ SystemPackage objects that holds all the pipelines for the INB Layer for a Syste
 type SystemPackage struct {
 	pipelines []*goetl.Pipeline
 	system    *sources.System
+	target    *sources.System
 }
 
 func (srcP *SystemPackage) Name() string {
@@ -49,7 +51,11 @@ func (srcP *SystemPackage) Build() error {
 		logging.EtlLogger.Error(err.Error())
 		return err
 	}
-	targetDb, err := sql.Open(srcP.system.Driver, "postgres://targetUsername:targetPassword@127.0.0.1:5678/INB?sslmode=disable")
+	targetDbConnectionString, err := srcP.target.GetConnectionString()
+	if err != nil {
+		logging.EtlLogger.Error(err.Error())
+	}
+	targetDb, err := sql.Open(srcP.system.Driver, targetDbConnectionString)
 	if err != nil {
 		logging.EtlLogger.Error(err.Error())
 	}
@@ -63,6 +69,6 @@ func (srcP *SystemPackage) Build() error {
 	return nil
 }
 
-func NewSystemPackage(system *sources.System) *SystemPackage {
-	return &SystemPackage{pipelines: make([]*goetl.Pipeline, 0), system: system}
+func NewSystemPackage(system *sources.System, target *sources.System) *SystemPackage {
+	return &SystemPackage{pipelines: make([]*goetl.Pipeline, 0), system: system, target: target}
 }
