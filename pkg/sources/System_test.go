@@ -44,6 +44,11 @@ func TestSourceSystemLoad(t *testing.T) {
 	if srcSys.Port != 5432 {
 		t.Fatalf("Error on SourceSys.Port: %v", srcSys.Port)
 	}
+
+	if srcSys.Database != "db" {
+		t.Fatalf("Error on SourceSys.Database: %v", srcSys.Database)
+	}
+
 	allTables, _ := srcSys.GetAllTables()
 	if len(allTables) != 1 {
 		t.Fatalf("Error on SourceSys.GetTables: %v", len(allTables))

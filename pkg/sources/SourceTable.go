@@ -1,6 +1,7 @@
 package sources
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -10,6 +11,18 @@ type SourceTable struct {
 	Enabled   bool
 	srcFilter string
 	srcQuery  string
+}
+
+/*
+UnmarshalJson implements the interface to allow proper deserializing of the json obejct
+*/
+func (st *SourceTable) UnmarshalJson(b []byte) error {
+	var jsonString string
+	if err := json.Unmarshal(b, &jsonString); err != nil {
+		return err // Means the string was invalid
+	}
+	type ST SourceTable // A new type that doesn't have UnmarshalJSON method
+	return json.Unmarshal([]byte(jsonString), (*ST)(st))
 }
 
 /*

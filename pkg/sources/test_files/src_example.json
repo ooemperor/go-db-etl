@@ -1,34 +1,36 @@
 {
   "SrcSys": [
     {
-      "Name": "mssql1",
-      "Enabled": true,
-      "Username": "username1",
-      "Password" : "password1",
-      "Driver": "postgres",
-      "Address": "127.0.0.1",
-      "Port": 5432
+      "name": "mssql1",
+      "enabled": true,
+      "username": "username1",
+      "password" : "password1",
+      "driver": "postgres",
+      "address": "127.0.0.1",
+      "database": "db",
+      "port": 5432,
+      "tables": [
+        {
+          "Name": "Table1",
+          "Enabled": true
+        }
+      ]
     },
     {
-      "Name": "postgres1",
-      "Enabled": true,
-      "Username": "username1",
-      "Password" : "password1",
-      "Driver": "postgres",
-      "Address": "127.0.0.1",
-      "Port": 5432
-    }
-  ],
-  "SrcTable": [
-    {
-      "Name": "Table1",
-      "SrcSys": "mssql1",
-      "Enabled": true
-    },
-    {
-      "Name": "Table2",
-      "SrcSys": "postgres1",
-      "Enabled": false
+      "name": "postgres1",
+      "enabled": true,
+      "username": "username1",
+      "password" : "password1",
+      "driver": "postgres",
+      "address": "127.0.0.1",
+      "port": 5432,
+      "database": "db",
+      "tables": [
+        {
+          "Name": "Table2",
+          "Enabled": false
+        }
+      ]
     }
   ],
   "Target": {

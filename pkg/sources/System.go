@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/jackc/pgx"
+	_ "github.com/lib/pq"
 	_ "github.com/microsoft/go-mssqldb"
 )
 
@@ -16,14 +17,14 @@ type System struct {
 	Address  string
 	Port     int
 	Database string
-	tables   []*SourceTable
+	Tables   []*SourceTable
 }
 
 /*
 GetAllTables return the list of srcTables associated with this sourceSystem
 */
 func (sys *System) GetAllTables() ([]*SourceTable, error) {
-	return sys.tables, nil
+	return sys.Tables, nil
 }
 
 /*
@@ -31,7 +32,7 @@ GetActiveTables return the list of srcTables associated with this sourceSystem
 */
 func (sys *System) GetActiveTables() ([]*SourceTable, error) {
 	var outputTables []*SourceTable
-	for _, t := range sys.tables {
+	for _, t := range sys.Tables {
 		if t.Enabled {
 			outputTables = append(outputTables, t)
 		}
