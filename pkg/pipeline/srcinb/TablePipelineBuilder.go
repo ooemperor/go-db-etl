@@ -3,6 +3,8 @@ package srcinb
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/ooemperor/go-db-etl/pkg/config"
 	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"github.com/ooemperor/go-db-etl/pkg/sources"
 	"github.com/teambenny/goetl"
@@ -29,9 +31,9 @@ func (inb *SrcTablePipelineBuilder) Build() *goetl.Pipeline {
 	truncator := processors.NewSQLExecutor(inb.TargetDb, truncateQuery)
 
 	reader := processors.NewSQLReader(inb.SourceDb, queryString)
-	reader.BatchSize = -1
+	reader.BatchSize = config.Config.BatchSizeReader
 	writer := processors.NewPostgreSQLWriter(inb.TargetDb, destinationTable)
-	writer.BatchSize = 1000
+	writer.BatchSize = config.Config.BatchSizeWriter
 	writer.OnDupKeyUpdate = false
 
 	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writer), goetl.Do(reader).Outputs(writer))

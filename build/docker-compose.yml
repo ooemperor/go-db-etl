@@ -1,0 +1,6 @@
+services:
+  runner:
+    image: ghcr.io/ooemperor/go-db-etl:latest
+    container_name: go-db-etl
+    volumes:
+      - "../src.test.json:/app/src.test.json"
