@@ -2,8 +2,8 @@ package srcinb
 
 import (
 	"database/sql"
-	"fmt"
 
+	"github.com/ooemperor/go-db-etl/pkg/builder"
 	"github.com/ooemperor/go-db-etl/pkg/config"
 	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"github.com/ooemperor/go-db-etl/pkg/sources"
@@ -26,7 +26,7 @@ Build constructs the Pipeline for a given table
 func (inb *SrcTablePipelineBuilder) Build() (*goetl.Pipeline, error) {
 	queryString, _ := inb.Table.GetSelectQuery()
 	destinationTable := inb.Table.Name + "_" + inb.Table.SrcSys
-	truncateQuery := fmt.Sprintf("TRUNCATE TABLE %s;", destinationTable)
+	truncateQuery, _ := builder.BuildTruncateTableSql("inb", destinationTable)
 
 	truncator := processors.NewSQLExecutor(inb.TargetDb, truncateQuery)
 
