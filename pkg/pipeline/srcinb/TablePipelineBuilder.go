@@ -23,7 +23,7 @@ type SrcTablePipelineBuilder struct {
 /*
 Build constructs the Pipeline for a given table
 */
-func (inb *SrcTablePipelineBuilder) Build() *goetl.Pipeline {
+func (inb *SrcTablePipelineBuilder) Build() (*goetl.Pipeline, error) {
 	queryString, _ := inb.Table.GetSelectQuery()
 	destinationTable := inb.Table.Name + "_" + inb.Table.SrcSys
 	truncateQuery := fmt.Sprintf("TRUNCATE TABLE %s;", destinationTable)
@@ -43,10 +43,11 @@ func (inb *SrcTablePipelineBuilder) Build() *goetl.Pipeline {
 	if err != nil {
 		logging.EtlLogger.Info("Error in layout of pipeline for: " + destinationTable + " " + inb.Table.SrcSys)
 		logging.EtlLogger.Error(err.Error())
+		return nil, err
 	}
 
 	pipeline := goetl.NewBranchingPipeline(layout)
 	pipeline.Name = destinationTable
 
-	return pipeline
+	return pipeline, nil
 }

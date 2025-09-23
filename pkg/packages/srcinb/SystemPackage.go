@@ -61,7 +61,7 @@ func (srcP *SystemPackage) Build() error {
 	}
 	for _, table := range tables {
 		pipeBuilder := srcinb.SrcTablePipelineBuilder{SourceDb: db, TargetDb: targetDb, Table: table}
-		pipeLine := pipeBuilder.Build()
+		pipeLine, _ := pipeBuilder.Build()
 		srcP.pipelines = append(srcP.pipelines, pipeLine)
 	}
 
