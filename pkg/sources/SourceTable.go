@@ -29,19 +29,19 @@ func (st *SourceTable) UnmarshalJson(b []byte) error {
 GetSelectQuery assembles the selectQuery for the given table.
 */
 func (st *SourceTable) GetSelectQuery() (string, error) {
-	if st.srcQuery != "" {
-		return st.srcQuery, nil
-	} else if st.srcFilter != "" {
-		return fmt.Sprintf("SELECT * FROM %s %s;", st.Name, st.srcFilter), nil
+	if st.GetSrcQuery() != "" {
+		return st.GetSrcQuery(), nil
+	} else if st.GetSelectFilter() != "" {
+		return fmt.Sprintf("SELECT * FROM %s %s;", st.Name, st.GetSelectFilter()), nil
 	} else {
 		return fmt.Sprintf("SELECT * FROM %s;", st.Name), nil
 	}
 }
 
-func (st *SourceTable) GetSelectFilter() (string, error) {
-	return st.srcFilter, nil
+func (st *SourceTable) GetSelectFilter() string {
+	return st.srcFilter
 }
 
-func (st *SourceTable) GetSrcQuery() (string, error) {
-	return st.srcQuery, nil
+func (st *SourceTable) GetSrcQuery() string {
+	return st.srcQuery
 }

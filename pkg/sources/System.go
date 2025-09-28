@@ -3,6 +3,7 @@ package sources
 import (
 	"errors"
 	"fmt"
+
 	_ "github.com/jackc/pgx"
 	_ "github.com/lib/pq"
 	_ "github.com/microsoft/go-mssqldb"
