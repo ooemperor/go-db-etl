@@ -9,26 +9,45 @@ services:
     environment:
       - POSTGRES_PASSWORD=targetPassword
       - POSTGRES_USER=targetUsername
-      - POSTGRES_DB=INB
+      - POSTGRES_DB=inb
+
   postgres_src1:
     image: postgres:17-bookworm
     container_name: postgres-17-src1
     ports:
       - 5001:5432
     volumes:
-      - ~/apps/postgres-17-src1:/var/lib/postgresql/data
+      - postgres_data_src1:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=src1Password
       - POSTGRES_USER=src1Username
       - POSTGRES_DB=src
+
   postgres_src2:
     image: postgres:17-bookworm
     container_name: postgres-17-src2
     ports:
       - 5002:5432
     volumes:
-      - ~/apps/postgres-17-src2:/var/lib/postgresql/data
+      - postgres_data_src2:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=src2Password
       - POSTGRES_USER=src2Username
       - POSTGRES_DB=src
+
+  sqlserver_src3:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_src1
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+      MSSQL_PID: "Evaluation"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data_src3:/var/opt/mssql
+
+volumes:
+  postgres_data_src1:
+  postgres_data_src2:
+  sqlserver_data_src3:
