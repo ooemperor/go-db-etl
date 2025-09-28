@@ -20,7 +20,7 @@ type RdvPipeline struct {
 }
 
 /*
-buildTruncator constructs the processor that truncates the targetTable
+buildTruncator constructs the processor that truncates the targetTable in rdv
 */
 func (rdv *RdvPipeline) buildTruncator() (*processors.SQLExecutor, error) {
 	truncateQuery, err := builder.BuildTruncateTableSql("rdv", rdv.Table)
@@ -32,7 +32,7 @@ func (rdv *RdvPipeline) buildTruncator() (*processors.SQLExecutor, error) {
 }
 
 /*
-buildInbReader constructs the processor reads from the source table
+buildInbReader constructs the processor reads from the source table in inb
 */
 func (rdv *RdvPipeline) buildInbReader() (*processors.SQLReader, error) {
 	queryString, err := builder.BuildInbRdvSatCurSelect(rdv.Table)
