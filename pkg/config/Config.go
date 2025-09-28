@@ -12,7 +12,6 @@ import (
 Configuration Object that holds all the necessary config information
 */
 type Configuration struct {
-	postgresHost    string
 	timeout         int64
 	Name            string
 	BatchSizeReader int
