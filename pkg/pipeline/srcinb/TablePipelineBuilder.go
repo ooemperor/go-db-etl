@@ -2,6 +2,7 @@ package srcinb
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/ooemperor/go-db-etl/pkg/builder"
 	"github.com/ooemperor/go-db-etl/pkg/config"
@@ -24,6 +25,9 @@ type SrcTablePipelineBuilder struct {
 getDestinationTable return the destinationTableName for the inb layer
 */
 func (inb *SrcTablePipelineBuilder) getDestinationTable() string {
+	if inb.Table.Name == "" || inb.Table.SrcSys == "" {
+		return ""
+	}
 	return inb.Table.Name + "_" + inb.Table.SrcSys
 }
 
@@ -58,6 +62,9 @@ buildSrcInbWriter builds the Processor to insert the data into the inb table
 */
 func (inb *SrcTablePipelineBuilder) buildSrcInbWriter() (*processors.PostgreSQLWriter, error) {
 	destinationTable := inb.getDestinationTable()
+	if destinationTable == "" {
+		return nil, fmt.Errorf("the destination table cannot be blank, check the configuration")
+	}
 	writer := processors.NewPostgreSQLWriter(inb.TargetDb, destinationTable)
 	writer.BatchSize = config.Config.BatchSizeWriter
 	writer.OnDupKeyUpdate = false

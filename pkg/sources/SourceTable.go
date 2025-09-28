@@ -2,6 +2,7 @@ package sources
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -29,6 +30,9 @@ func (st *SourceTable) UnmarshalJson(b []byte) error {
 GetSelectQuery assembles the selectQuery for the given table.
 */
 func (st *SourceTable) GetSelectQuery() (string, error) {
+	if st.Name == "" {
+		return "", errors.New("name is required")
+	}
 	if st.GetSrcQuery() != "" {
 		return st.GetSrcQuery(), nil
 	} else if st.GetSelectFilter() != "" {

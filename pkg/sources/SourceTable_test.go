@@ -72,7 +72,8 @@ func TestSourceTable_GetQuery(t *testing.T) {
 func TestSourceTable_GetSelectQuery(t *testing.T) {
 	srcTableFilter := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, srcFilter: "WHERE name = 'NameTest'"}
 	srcTableQuery := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, srcQuery: "Select * from public.Table1 WHERE name = 'NameTest' AND 1=1;"}
-	srcTableBlank := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true}
+	srcTableNormal := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true}
+	srcTableBlank := SourceTable{Name: "", SrcSys: "sql", Enabled: true}
 
 	tests := []struct {
 		name    string
@@ -82,7 +83,8 @@ func TestSourceTable_GetSelectQuery(t *testing.T) {
 	}{
 		{name: "GetSelectQueryTest1", table: srcTableFilter, want: "SELECT * FROM Table1 WHERE name = 'NameTest';", wantErr: false},
 		{name: "GetSelectQueryTest2", table: srcTableQuery, want: "Select * from public.Table1 WHERE name = 'NameTest' AND 1=1;", wantErr: false},
-		{name: "GetSelectQueryTest3", table: srcTableBlank, want: "SELECT * FROM Table1;", wantErr: false},
+		{name: "GetSelectQueryTest3", table: srcTableNormal, want: "SELECT * FROM Table1;", wantErr: false},
+		{name: "GetSelectQueryTest4", table: srcTableBlank, want: "", wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
