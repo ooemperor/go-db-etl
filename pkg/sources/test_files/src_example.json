@@ -12,7 +12,8 @@
       "tables": [
         {
           "Name": "Table1",
-          "Enabled": true
+          "Enabled": true,
+          "SrcSys": "mssql1"
         }
       ]
     },

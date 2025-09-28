@@ -2,6 +2,7 @@ package srcinb
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/ooemperor/go-db-etl/pkg/logging"
@@ -30,7 +31,7 @@ func (srcP *SystemPackage) Run() error {
 	if len(srcP.pipelines) == 0 {
 		msg := fmt.Sprintf("no pipelines found for SystemPackage %s", srcP.system.Name)
 		logging.EtlLogger.Error(msg)
-		return fmt.Errorf(msg, nil)
+		return errors.New(msg)
 	}
 	for _, tablePipeline := range srcP.pipelines {
 		c := <-tablePipeline.Run()
@@ -47,9 +48,11 @@ func (srcP *SystemPackage) Build() error {
 	connectionString, _ := srcP.system.GetConnectionString()
 	db, err := sql.Open(srcP.system.Driver, connectionString)
 	if err != nil {
-		fmt.Println(connectionString)
-		logging.EtlLogger.Error(err.Error())
+		logging.EtlLogger.Error(err.Error(), " on ConenctionString", connectionString)
 		return err
+	}
+	if srcP.target == nil {
+		return errors.New("no target system found, check your configuration")
 	}
 	targetDbConnectionString, err := srcP.target.GetConnectionString()
 	if err != nil {
@@ -61,7 +64,7 @@ func (srcP *SystemPackage) Build() error {
 	}
 	for _, table := range tables {
 		pipeBuilder := srcinb.SrcTablePipelineBuilder{SourceDb: db, TargetDb: targetDb, Table: table}
-		pipeLine := pipeBuilder.Build()
+		pipeLine, _ := pipeBuilder.Build()
 		srcP.pipelines = append(srcP.pipelines, pipeLine)
 	}
 

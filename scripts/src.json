@@ -1,0 +1,65 @@
+{
+  "SrcSys": [
+    {
+      "name": "postgres1",
+      "enabled": true,
+      "username": "src1Username",
+      "password" : "src1Password",
+      "database": "src",
+      "driver": "postgres",
+      "address": "127.0.0.1",
+      "port": 5001,
+      "tables": [
+        {
+          "Name": "table1",
+          "Enabled": true,
+          "srcSys": "postgres1"
+        }
+      ]
+    },
+    {
+      "name": "postgres2",
+      "enabled": true,
+      "username": "src2Username",
+      "password" : "src2Password",
+      "database": "src",
+      "driver": "postgres",
+      "address": "127.0.0.1",
+      "port": 5002,
+      "tables": [
+        {
+          "Name": "table2",
+          "Enabled": true,
+          "srcSys": "postgres2"
+        }
+      ]
+    },
+    {
+      "name": "mssql3",
+      "enabled": true,
+      "username": "sa",
+      "password" : "YourStrong!Passw0rd",
+      "database": "src",
+      "driver": "mssql",
+      "address": "127.0.0.1",
+      "port": 1433,
+      "tables": [
+        {
+          "Name": "table3",
+          "Enabled": true,
+          "srcSys": "mssql3"
+        }
+      ]
+    }
+  ],
+  "Target": {
+    "Name": "target",
+    "Enabled": true,
+    "Username": "targetUsername",
+    "Password" : "targetPassword",
+    "Database": "inb",
+    "Driver": "postgres",
+    "Address": "127.0.0.1",
+    "Port": 5678
+  }
+}
