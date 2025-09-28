@@ -4,6 +4,7 @@ FROM golang:tip-alpine AS builder
 WORKDIR /app
 
 # Copy go mod and sum files
+# only copy those files to accelerate the building process with cache.
 COPY go.mod go.sum ./
 
 # Download dependencies
@@ -20,7 +21,7 @@ FROM alpine:latest
 
 WORKDIR /app
 
-# Copy binary from builder
+# Copy binary from builder into lightweight image
 COPY --from=builder /app/bin/go-db-etl /app/bin/go-db-etl
 COPY .env .env
 
