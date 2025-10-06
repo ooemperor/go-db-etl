@@ -15,7 +15,7 @@ import (
 RdvPipeline is the object that holds all the information to load a single table from rdv to bdv.
 */
 type RdvPipeline struct {
-	db    *sql.DB
+	Db    *sql.DB
 	Table string
 }
 
@@ -27,7 +27,7 @@ func (rdv *RdvPipeline) buildTruncator() (*processors.SQLExecutor, error) {
 	if err != nil {
 		return nil, err
 	}
-	truncator := processors.NewSQLExecutor(rdv.db, truncateQuery)
+	truncator := processors.NewSQLExecutor(rdv.Db, truncateQuery)
 	return truncator, nil
 }
 
@@ -39,7 +39,7 @@ func (rdv *RdvPipeline) buildInbReader() (*processors.SQLReader, error) {
 	if err != nil {
 		return nil, err
 	}
-	reader := processors.NewSQLReader(rdv.db, queryString)
+	reader := processors.NewSQLReader(rdv.Db, queryString)
 	reader.BatchSize = config.Config.BatchSizeReader
 	return reader, nil
 }
@@ -52,7 +52,7 @@ func (rdv *RdvPipeline) buildSatCurWriter() (*processors.PostgreSQLWriter, error
 	if err != nil {
 		return nil, err
 	}
-	writerSatCur := processors.NewPostgreSQLWriter(rdv.db, satCurTableName)
+	writerSatCur := processors.NewPostgreSQLWriter(rdv.Db, satCurTableName)
 	writerSatCur.BatchSize = config.Config.BatchSizeWriter
 	writerSatCur.OnDupKeyUpdate = false
 	return writerSatCur, nil
@@ -66,7 +66,7 @@ func (rdv *RdvPipeline) buildSatMarkDelete() (*processors.SQLExecutor, error) {
 	if err != nil {
 		return nil, err
 	}
-	markDelete := processors.NewSQLExecutor(rdv.db, deleteQuery)
+	markDelete := processors.NewSQLExecutor(rdv.Db, deleteQuery)
 	return markDelete, nil
 }
 
@@ -78,7 +78,7 @@ func (rdv *RdvPipeline) buildSatInsertExecutor() (*processors.SQLExecutor, error
 	if err != nil {
 		return nil, err
 	}
-	satInserter := processors.NewSQLExecutor(rdv.db, query)
+	satInserter := processors.NewSQLExecutor(rdv.Db, query)
 	return satInserter, nil
 }
 

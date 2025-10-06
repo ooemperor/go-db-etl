@@ -30,7 +30,7 @@ func TestRdvPipeline_buildTruncator(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildTruncator()
@@ -69,7 +69,7 @@ func TestRdvPipeline_buildInbReader(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildInbReader()
@@ -109,7 +109,7 @@ func TestRdvPipeline_buildSatCurWriter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildSatCurWriter()
@@ -144,7 +144,7 @@ func TestRdvPipeline_buildSatMarkDelete(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildSatMarkDelete()
@@ -179,7 +179,7 @@ func TestRdvPipeline_buildSatInsertExecutor(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildSatInsertExecutor()
@@ -215,7 +215,7 @@ func TestRdvPipeline_Build(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			_, err := rdv.Build()
