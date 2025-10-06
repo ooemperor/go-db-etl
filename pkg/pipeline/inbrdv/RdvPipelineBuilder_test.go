@@ -93,7 +93,7 @@ func TestRdvPipeline_buildSatCurWriter(t *testing.T) {
 		Table string
 	}
 
-	expectedWriterForTest2 := processors.NewPostgreSQLWriter(nil, "testTableInsert_sat_cur")
+	expectedWriterForTest2 := processors.NewPostgreSQLWriter(nil, "rdv.testTableInsert_sat_cur")
 	expectedWriterForTest2.BatchSize = config.Config.BatchSizeWriter
 	expectedWriterForTest2.OnDupKeyUpdate = false
 

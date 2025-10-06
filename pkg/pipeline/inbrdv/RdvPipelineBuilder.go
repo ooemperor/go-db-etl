@@ -52,7 +52,7 @@ func (rdv *RdvPipeline) buildSatCurWriter() (*processors.PostgreSQLWriter, error
 	if err != nil {
 		return nil, err
 	}
-	writerSatCur := processors.NewPostgreSQLWriter(rdv.Db, satCurTableName)
+	writerSatCur := processors.NewPostgreSQLWriter(rdv.Db, fmt.Sprintf("rdv.%v", satCurTableName))
 	writerSatCur.BatchSize = config.Config.BatchSizeWriter
 	writerSatCur.OnDupKeyUpdate = false
 	return writerSatCur, nil
