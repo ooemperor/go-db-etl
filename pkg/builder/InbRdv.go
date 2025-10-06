@@ -11,7 +11,7 @@ func BuildInbRdvSatCurSelect(tableName string) (string, error) {
 		return "", fmt.Errorf("the tablename cannot be blank")
 	}
 
-	script += "SELECT NOW(), NULL, decode(md5(CAST(t.* AS text)), ''hex''), t.* "
+	script += "SELECT NOW() AS load_dts, NULL AS delete_dts, decode(md5(CAST(t.* AS text)), 'hex') AS frh, t.* "
 	script += fmt.Sprintf("FROM inb.%s AS t;", tableName)
 
 	return script, nil

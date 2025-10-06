@@ -25,7 +25,7 @@ func TestRdvPipeline_buildTruncator(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "TruncatorTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
-		{name: "TruncatorTest2", fields: fields{nil, "testTable"}, want: processors.NewSQLExecutor(nil, "TRUNCATE TABLE rdv.testTable;"), wantErr: false},
+		{name: "TruncatorTest2", fields: fields{nil, "testTable"}, want: processors.NewSQLExecutor(nil, "TRUNCATE TABLE rdv.testTable_sat_cur;"), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -54,7 +54,7 @@ func TestRdvPipeline_buildInbReader(t *testing.T) {
 		Table string
 	}
 
-	expectedReaderForTest2 := processors.NewSQLReader(nil, "SELECT NOW(), NULL, decode(md5(CAST(t.* AS text)), ''hex''), t.* FROM inb.testTableInsert AS t;")
+	expectedReaderForTest2 := processors.NewSQLReader(nil, "SELECT NOW() AS load_dts, NULL AS delete_dts, decode(md5(CAST(t.* AS text)), 'hex') AS frh, t.* FROM inb.testTableInsert AS t;")
 	expectedReaderForTest2.BatchSize = config.Config.BatchSizeReader
 	tests := []struct {
 		name    string

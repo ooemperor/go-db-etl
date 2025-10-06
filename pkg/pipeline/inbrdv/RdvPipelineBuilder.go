@@ -23,7 +23,8 @@ type RdvPipeline struct {
 buildTruncator constructs the processor that truncates the targetTable in rdv
 */
 func (rdv *RdvPipeline) buildTruncator() (*processors.SQLExecutor, error) {
-	truncateQuery, err := builder.BuildTruncateTableSql("rdv", rdv.Table)
+	satCurName, _ := builder.GetRdvSatCurTableName(rdv.Table)
+	truncateQuery, err := builder.BuildTruncateTableSql("rdv", satCurName)
 	if err != nil {
 		return nil, err
 	}
