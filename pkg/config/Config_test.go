@@ -3,6 +3,8 @@ package config
 import (
 	"reflect"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
 
 /*
@@ -10,22 +12,18 @@ TestCases for the config
 */
 func TestConfiguration_Init(t *testing.T) {
 	config := Configuration{timeout: 10, Name: "go-db-etl", BatchSizeReader: 10000, BatchSizeWriter: 1000}
-	type args struct {
-		envFile string
-	}
 	tests := []struct {
 		name    string
-		args    args
 		want    *Configuration
 		wantErr bool
 	}{
-		{name: "ConfigTest1", args: args{envFile: "../../.env"}, want: &config, wantErr: false},
-		{name: "ConfigTest1", args: args{envFile: ".nonExistant"}, want: &Configuration{}, wantErr: true},
+		{name: "ConfigTest1", want: &config, wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			conf := &Configuration{}
-			got, err := conf.Init(tt.args.envFile)
+			_ = godotenv.Load("../../.env")
+			got, err := conf.Init()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Init() error = %v, wantErr %v", err, tt.wantErr)
 				return

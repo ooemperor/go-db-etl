@@ -23,7 +23,6 @@ WORKDIR /app
 
 # Copy binary from builder into lightweight image
 COPY --from=builder /app/bin/go-db-etl /app/bin/go-db-etl
-COPY .env .env
 
 # Optionally, copy static files if needed
 # COPY --from=builder /app/static ./static

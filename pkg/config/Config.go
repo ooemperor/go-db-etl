@@ -21,12 +21,12 @@ type Configuration struct {
 /*
 Init initializes the config parameters
 */
-func (conf *Configuration) Init(envFile string) (*Configuration, error) {
-	err := godotenv.Load(envFile)
-	if err != nil {
-		return conf, err
-	}
-
+func (conf *Configuration) Init() (*Configuration, error) {
+	_ = godotenv.Load()
+	_ = godotenv.Load(".env")
+	_ = godotenv.Load("../.env")
+	_ = godotenv.Load("../../.env")
+	_ = godotenv.Load("../../../.env")
 	conf.timeout, _ = strconv.ParseInt(os.Getenv("timeout_sec"), 10, 64)
 	conf.Name = os.Getenv("name")
 	var batchReader, _ = strconv.ParseInt(os.Getenv("batch_size_read"), 10, 64)
@@ -41,6 +41,6 @@ func (conf *Configuration) Init(envFile string) (*Configuration, error) {
 /*
 Config Export the Config object
 */
-var Config, _ = (&(Configuration{})).Init(".env")
+var Config, _ = (&(Configuration{})).Init()
 
 var SourceConfiguration, _ = sources.BuildSourceConfig("src.json")
