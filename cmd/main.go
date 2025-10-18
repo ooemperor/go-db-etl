@@ -20,7 +20,7 @@ func main() {
 	// TODO: INSERT pre run output here
 	runner := runner.Runner{}
 	runner.Init(srcConfig)
-
+	runner.Build()
 	runner.Run()
 
 }

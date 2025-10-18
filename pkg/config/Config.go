@@ -16,6 +16,9 @@ type Configuration struct {
 	Name            string
 	BatchSizeReader int
 	BatchSizeWriter int
+	EtlLogLevel     int
+	RunSrcInb       bool
+	RunInbRdv       bool
 }
 
 /*
@@ -34,6 +37,10 @@ func (conf *Configuration) Init() (*Configuration, error) {
 
 	conf.BatchSizeReader = int(batchReader)
 	conf.BatchSizeWriter = int(batchWriter)
+
+	conf.RunSrcInb, _ = strconv.ParseBool(os.Getenv("Run_SrcInb"))
+	conf.RunInbRdv, _ = strconv.ParseBool(os.Getenv("Run_InbRdv"))
+	conf.EtlLogLevel, _ = strconv.Atoi(os.Getenv("Etl_LogLevel"))
 
 	return conf, nil
 }
