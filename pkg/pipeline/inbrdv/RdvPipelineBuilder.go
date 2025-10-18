@@ -48,14 +48,17 @@ func (rdv *RdvPipeline) buildInbReader() (*processors.SQLReader, error) {
 /*
 buildSatCurWriter constructs the processor that writes the data into the sat_cur table
 */
-func (rdv *RdvPipeline) buildSatCurWriter() (*processors.PostgreSQLWriter, error) {
+func (rdv *RdvPipeline) buildSatCurWriter() (*processors.SQLExecutor, error) {
 	satCurTableName, err := builder.GetRdvSatCurTableName(rdv.Table)
 	if err != nil {
 		return nil, err
 	}
-	writerSatCur := processors.NewPostgreSQLWriter(rdv.Db, fmt.Sprintf("rdv.%v", satCurTableName))
-	writerSatCur.BatchSize = config.Config.BatchSizeWriter
-	writerSatCur.OnDupKeyUpdate = false
+	// writerSatCur := processors.NewPostgreSQLWriter(rdv.Db, fmt.Sprintf("rdv.%v", satCurTableName))
+	// writerSatCur.BatchSize = config.Config.BatchSizeWriter
+	// writerSatCur.OnDupKeyUpdate = false
+	queryString, err := builder.BuildInbRdvSatCurSelect(rdv.Table)
+	queryString = "INSERT INTO rdv." + satCurTableName + " " + queryString
+	writerSatCur := processors.NewSQLExecutor(rdv.Db, queryString)
 	return writerSatCur, nil
 }
 
@@ -112,7 +115,7 @@ func (rdv *RdvPipeline) Build() (*goetl.Pipeline, error) {
 	}
 
 	// build stages in order of later usage
-	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur), goetl.Do(reader).Outputs(writerSatCur))
+	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur))
 	writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted))
 	updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter))
 	insertSatStage := goetl.NewPipelineStage(goetl.Do(satInserter))

@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/ooemperor/go-db-etl/pkg/builder"
 	"github.com/ooemperor/go-db-etl/pkg/config"
 	"github.com/teambenny/goetl"
 	"github.com/teambenny/goetl/processors"
@@ -93,14 +94,14 @@ func TestRdvPipeline_buildSatCurWriter(t *testing.T) {
 		Table string
 	}
 
-	expectedWriterForTest2 := processors.NewPostgreSQLWriter(nil, "rdv.testTableInsert_sat_cur")
-	expectedWriterForTest2.BatchSize = config.Config.BatchSizeWriter
-	expectedWriterForTest2.OnDupKeyUpdate = false
+	queryString, _ := builder.BuildInbRdvSatCurSelect("testTableInsert")
+	queryString = "INSERT INTO " + "rdv.testTableInsert_sat_cur" + " " + queryString
+	expectedWriterForTest2 := processors.NewSQLExecutor(nil, queryString)
 
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *processors.PostgreSQLWriter
+		want    *processors.SQLExecutor
 		wantErr bool
 	}{
 		{name: "SatCurWriterTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
