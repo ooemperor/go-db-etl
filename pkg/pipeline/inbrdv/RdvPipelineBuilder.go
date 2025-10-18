@@ -22,13 +22,13 @@ type RdvPipeline struct {
 /*
 buildTruncator constructs the processor that truncates the targetTable in rdv
 */
-func (rdv *RdvPipeline) buildTruncator() (*processors.SQLExecutor, error) {
+func (rdv *RdvPipeline) buildTruncator() (*processors.SQLReader, error) {
 	satCurName, _ := builder.GetRdvSatCurTableName(rdv.Table)
 	truncateQuery, err := builder.BuildTruncateTableSql("rdv", satCurName)
 	if err != nil {
 		return nil, err
 	}
-	truncator := processors.NewSQLExecutor(rdv.Db, truncateQuery)
+	truncator := processors.NewSQLReader(rdv.Db, truncateQuery)
 	return truncator, nil
 }
 
@@ -48,7 +48,7 @@ func (rdv *RdvPipeline) buildInbReader() (*processors.SQLReader, error) {
 /*
 buildSatCurWriter constructs the processor that writes the data into the sat_cur table
 */
-func (rdv *RdvPipeline) buildSatCurWriter() (*processors.SQLExecutor, error) {
+func (rdv *RdvPipeline) buildSatCurWriter() (*processors.SQLReader, error) {
 	satCurTableName, err := builder.GetRdvSatCurTableName(rdv.Table)
 	if err != nil {
 		return nil, err
@@ -58,31 +58,31 @@ func (rdv *RdvPipeline) buildSatCurWriter() (*processors.SQLExecutor, error) {
 	// writerSatCur.OnDupKeyUpdate = false
 	queryString, err := builder.BuildInbRdvSatCurSelect(rdv.Table)
 	queryString = "INSERT INTO rdv." + satCurTableName + " " + queryString
-	writerSatCur := processors.NewSQLExecutor(rdv.Db, queryString)
+	writerSatCur := processors.NewSQLReader(rdv.Db, queryString)
 	return writerSatCur, nil
 }
 
 /*
 buildSatMarkDelete constructs the processor that updates the sat records as deleted
 */
-func (rdv *RdvPipeline) buildSatMarkDelete() (*processors.SQLExecutor, error) {
+func (rdv *RdvPipeline) buildSatMarkDelete() (*processors.SQLReader, error) {
 	deleteQuery, err := builder.BuildInbRdvSatDeleteQuery(rdv.Table)
 	if err != nil {
 		return nil, err
 	}
-	markDelete := processors.NewSQLExecutor(rdv.Db, deleteQuery)
+	markDelete := processors.NewSQLReader(rdv.Db, deleteQuery)
 	return markDelete, nil
 }
 
 /*
 buildSatInsertExecutor constructs the processor that updates the sat records as deleted
 */
-func (rdv *RdvPipeline) buildSatInsertExecutor() (*processors.SQLExecutor, error) {
+func (rdv *RdvPipeline) buildSatInsertExecutor() (*processors.SQLReader, error) {
 	query, err := builder.BuildInbRdvSatInsertQuery(rdv.Table)
 	if err != nil {
 		return nil, err
 	}
-	satInserter := processors.NewSQLExecutor(rdv.Db, query)
+	satInserter := processors.NewSQLReader(rdv.Db, query)
 	return satInserter, nil
 }
 
@@ -114,14 +114,10 @@ func (rdv *RdvPipeline) Build() (*goetl.Pipeline, error) {
 		return nil, err
 	}
 
-	dummy := builder.BuildInbRdvDummySelect(rdv.Db)
-	pass2 := &processors.Passthrough{}
-	pass3 := &processors.Passthrough{}
-
 	// build stages in order of later usage
-	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur), goetl.Do(dummy).Outputs(writerSatCur, pass2))
-	writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted), goetl.Do(pass2).Outputs(updateDeleted, pass3))
-	updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter), goetl.Do(pass3).Outputs(satInserter))
+	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur))
+	writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted))
+	updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter))
 	insertSatStage := goetl.NewPipelineStage(goetl.Do(satInserter))
 
 	layout, err := goetl.NewPipelineLayout(truncateAndReadStage, writerSatCurStage, updateSatStage, insertSatStage)

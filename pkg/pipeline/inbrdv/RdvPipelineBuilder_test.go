@@ -22,11 +22,11 @@ func TestRdvPipeline_buildTruncator(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *processors.SQLExecutor
+		want    *processors.SQLReader
 		wantErr bool
 	}{
 		{name: "TruncatorTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
-		{name: "TruncatorTest2", fields: fields{nil, "testTable"}, want: processors.NewSQLExecutor(nil, "TRUNCATE TABLE rdv.testTable_sat_cur;"), wantErr: false},
+		{name: "TruncatorTest2", fields: fields{nil, "testTable"}, want: processors.NewSQLReader(nil, "TRUNCATE TABLE rdv.testTable_sat_cur;"), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -96,12 +96,12 @@ func TestRdvPipeline_buildSatCurWriter(t *testing.T) {
 
 	queryString, _ := builder.BuildInbRdvSatCurSelect("testTableInsert")
 	queryString = "INSERT INTO " + "rdv.testTableInsert_sat_cur" + " " + queryString
-	expectedWriterForTest2 := processors.NewSQLExecutor(nil, queryString)
+	expectedWriterForTest2 := processors.NewSQLReader(nil, queryString)
 
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *processors.SQLExecutor
+		want    *processors.SQLReader
 		wantErr bool
 	}{
 		{name: "SatCurWriterTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
@@ -136,11 +136,11 @@ func TestRdvPipeline_buildSatMarkDelete(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *processors.SQLExecutor
+		want    *processors.SQLReader
 		wantErr bool
 	}{
 		{name: "SatCurDeleteTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
-		{name: "SatCurDeleteTest2", fields: fields{nil, "testTableDelete"}, want: processors.NewSQLExecutor(nil, "UPDATE rdv.testTableDelete_sat SET delete_dts = NOW() WHERE frh NOT IN (SELECT frh FROM rdv.testTableDelete_sat_cur) AND delete_dts IS NULL;"), wantErr: false},
+		{name: "SatCurDeleteTest2", fields: fields{nil, "testTableDelete"}, want: processors.NewSQLReader(nil, "UPDATE rdv.testTableDelete_sat SET delete_dts = NOW() WHERE frh NOT IN (SELECT frh FROM rdv.testTableDelete_sat_cur) AND delete_dts IS NULL;"), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -171,11 +171,11 @@ func TestRdvPipeline_buildSatInsertExecutor(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *processors.SQLExecutor
+		want    *processors.SQLReader
 		wantErr bool
 	}{
 		{name: "SatInsertTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
-		{name: "SatInsertTest2", fields: fields{nil, "testTableSatInsert"}, want: processors.NewSQLExecutor(nil, "INSERT INTO rdv.testTableSatInsert_sat SELECT * FROM rdv.testTableSatInsert_sat_cur WHERE frh NOT IN (SELECT frh FROM rdv.testTableSatInsert_sat);"), wantErr: false},
+		{name: "SatInsertTest2", fields: fields{nil, "testTableSatInsert"}, want: processors.NewSQLReader(nil, "INSERT INTO rdv.testTableSatInsert_sat SELECT * FROM rdv.testTableSatInsert_sat_cur WHERE frh NOT IN (SELECT frh FROM rdv.testTableSatInsert_sat);"), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
