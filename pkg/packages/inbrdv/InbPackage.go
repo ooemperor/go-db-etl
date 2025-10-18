@@ -28,6 +28,7 @@ func (inbP *InbPackage) Name() string {
 Run executes the given SystemPackage
 */
 func (inbP *InbPackage) Run() error {
+	logging.EtlLogger.Info(fmt.Sprintf("START %v", inbP.Name()))
 	if len(inbP.pipelines) == 0 {
 		msg := fmt.Sprintf("no pipelines found for InbPackage %s", inbP.Name())
 		logging.EtlLogger.Error(msg)
@@ -39,6 +40,7 @@ func (inbP *InbPackage) Run() error {
 			logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
 		}
 	}
+	logging.EtlLogger.Info(fmt.Sprintf("END %v", inbP.Name()))
 	return nil
 }
 
