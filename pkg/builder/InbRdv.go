@@ -76,9 +76,3 @@ func BuildInbRdvSatInsertQuery(tableName string) (string, error) {
 
 	return script, nil
 }
-
-func BuildInbRdvDummySelect(db *sql.DB) goetl.Processor {
-	script := "SELECT 1"
-	processor := processors.NewSQLReader(db, script)
-	return processor
-}
