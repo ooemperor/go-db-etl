@@ -1,6 +1,12 @@
 package builder
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/teambenny/goetl"
+	"github.com/teambenny/goetl/processors"
+)
 
 /*
 BuildInbRdvSatCurSelect builds the query for getting the values from inb with hash calculation.
@@ -69,4 +75,10 @@ func BuildInbRdvSatInsertQuery(tableName string) (string, error) {
 	script += fmt.Sprintf("WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat);", tableName)
 
 	return script, nil
+}
+
+func BuildInbRdvDummySelect(db *sql.DB) goetl.Processor {
+	script := "SELECT 1"
+	processor := processors.NewSQLReader(db, script)
+	return processor
 }

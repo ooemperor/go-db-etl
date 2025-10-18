@@ -114,10 +114,14 @@ func (rdv *RdvPipeline) Build() (*goetl.Pipeline, error) {
 		return nil, err
 	}
 
+	dummy := builder.BuildInbRdvDummySelect(rdv.Db)
+	pass2 := &processors.Passthrough{}
+	pass3 := &processors.Passthrough{}
+
 	// build stages in order of later usage
-	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur))
-	writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted))
-	updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter))
+	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur), goetl.Do(dummy).Outputs(writerSatCur, pass2))
+	writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted), goetl.Do(pass2).Outputs(updateDeleted, pass3))
+	updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter), goetl.Do(pass3).Outputs(satInserter))
 	insertSatStage := goetl.NewPipelineStage(goetl.Do(satInserter))
 
 	layout, err := goetl.NewPipelineLayout(truncateAndReadStage, writerSatCurStage, updateSatStage, insertSatStage)
