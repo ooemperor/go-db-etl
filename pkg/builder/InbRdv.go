@@ -1,11 +1,7 @@
 package builder
 
 import (
-	"database/sql"
 	"fmt"
-
-	"github.com/teambenny/goetl"
-	"github.com/teambenny/goetl/processors"
 )
 
 /*
