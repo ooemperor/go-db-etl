@@ -31,7 +31,7 @@ func (conf *Configuration) Init() (*Configuration, error) {
 	_ = godotenv.Load("../../.env")
 	_ = godotenv.Load("../../../.env")
 	conf.timeout, _ = strconv.ParseInt(os.Getenv("TIMEOUT_SEC"), 10, 64)
-	conf.Name = os.Getenv("name")
+	conf.Name = os.Getenv("NAME")
 	var batchReader, _ = strconv.ParseInt(os.Getenv("BATCH_SIZE_READ"), 10, 64)
 	var batchWriter, _ = strconv.ParseInt(os.Getenv("BATCH_SIZE_WRITER"), 10, 64)
 
