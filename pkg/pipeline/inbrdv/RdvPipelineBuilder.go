@@ -109,7 +109,7 @@ func (rdv *RdvPipeline) buildExecuteAll() (*processors.SQLExecutor, error) {
 		return nil, err
 	}
 
-	fullQuery := truncateQuery + " " + satCurWriterQuery + " " + deleteQuery + " " + satWriterQuery
+	fullQuery := "DO $$ BEGIN " + truncateQuery + " END  $$ ; DO $$ BEGIN " + satCurWriterQuery + " END  $$ ; DO $$ BEGIN " + deleteQuery + " END  $$ ; DO $$ BEGIN " + satWriterQuery + " END $$ ;"
 	fullExecutor := processors.NewSQLExecutor(rdv.Db, fullQuery)
 	return fullExecutor, nil
 }
