@@ -1,6 +1,10 @@
 services:
   runner:
-    image: ghcr.io/ooemperor/go-db-etl:latest
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile
     container_name: go-db-etl
     volumes:
       - "../src.test.json:/app/src.test.json"
+    env_file:
+      - ../.env

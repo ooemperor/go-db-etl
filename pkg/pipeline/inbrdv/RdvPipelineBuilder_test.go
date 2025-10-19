@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/ooemperor/go-db-etl/pkg/builder"
 	"github.com/ooemperor/go-db-etl/pkg/config"
 	"github.com/teambenny/goetl"
 	"github.com/teambenny/goetl/processors"
@@ -25,12 +26,12 @@ func TestRdvPipeline_buildTruncator(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "TruncatorTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
-		{name: "TruncatorTest2", fields: fields{nil, "testTable"}, want: processors.NewSQLExecutor(nil, "TRUNCATE TABLE rdv.testTable;"), wantErr: false},
+		{name: "TruncatorTest2", fields: fields{nil, "testTable"}, want: processors.NewSQLExecutor(nil, "TRUNCATE TABLE rdv.testTable_sat_cur;"), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildTruncator()
@@ -54,7 +55,7 @@ func TestRdvPipeline_buildInbReader(t *testing.T) {
 		Table string
 	}
 
-	expectedReaderForTest2 := processors.NewSQLReader(nil, "SELECT NOW(), NULL, decode(md5(CAST(t.* AS text)), ''hex''), t.* FROM inb.testTableInsert AS t;")
+	expectedReaderForTest2 := processors.NewSQLReader(nil, "SELECT NOW() AS load_dts, NULL AS delete_dts, decode(md5(CAST(t.* AS text)), 'hex') AS frh, t.* FROM inb.testTableInsert AS t;")
 	expectedReaderForTest2.BatchSize = config.Config.BatchSizeReader
 	tests := []struct {
 		name    string
@@ -69,7 +70,7 @@ func TestRdvPipeline_buildInbReader(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildInbReader()
@@ -93,14 +94,14 @@ func TestRdvPipeline_buildSatCurWriter(t *testing.T) {
 		Table string
 	}
 
-	expectedWriterForTest2 := processors.NewPostgreSQLWriter(nil, "testTableInsert_sat_cur")
-	expectedWriterForTest2.BatchSize = config.Config.BatchSizeWriter
-	expectedWriterForTest2.OnDupKeyUpdate = false
+	queryString, _ := builder.BuildInbRdvSatCurSelect("testTableInsert")
+	queryString = "INSERT INTO " + "rdv.testTableInsert_sat_cur" + " " + queryString
+	expectedWriterForTest2 := processors.NewSQLExecutor(nil, queryString)
 
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *processors.PostgreSQLWriter
+		want    *processors.SQLExecutor
 		wantErr bool
 	}{
 		{name: "SatCurWriterTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
@@ -109,7 +110,7 @@ func TestRdvPipeline_buildSatCurWriter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildSatCurWriter()
@@ -144,7 +145,7 @@ func TestRdvPipeline_buildSatMarkDelete(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildSatMarkDelete()
@@ -179,7 +180,7 @@ func TestRdvPipeline_buildSatInsertExecutor(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			got, err := rdv.buildSatInsertExecutor()
@@ -215,7 +216,7 @@ func TestRdvPipeline_Build(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rdv := &RdvPipeline{
-				db:    tt.fields.db,
+				Db:    tt.fields.db,
 				Table: tt.fields.Table,
 			}
 			_, err := rdv.Build()

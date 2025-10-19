@@ -12,7 +12,7 @@ func TestBuilderInbRdvSelect(t *testing.T) {
 		t.Fatalf("Error on InbRdvSatCurSelect: %v", err)
 	}
 
-	if script != `SELECT NOW(), NULL, decode(md5(CAST(t.* AS text)), ''hex''), t.* FROM inb.TestTable AS t;` {
+	if script != `SELECT NOW() AS load_dts, NULL AS delete_dts, decode(md5(CAST(t.* AS text)), 'hex') AS frh, t.* FROM inb.TestTable AS t;` {
 		t.Fatalf("Select table statement incorrect: %v", script)
 	}
 }

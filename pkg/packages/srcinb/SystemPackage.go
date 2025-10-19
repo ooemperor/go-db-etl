@@ -28,6 +28,7 @@ func (srcP *SystemPackage) Name() string {
 Run executes the given SystemPackage
 */
 func (srcP *SystemPackage) Run() error {
+	logging.EtlLogger.Info(fmt.Sprintf("START %v", srcP.Name()))
 	if len(srcP.pipelines) == 0 {
 		msg := fmt.Sprintf("no pipelines found for SystemPackage %s", srcP.system.Name)
 		logging.EtlLogger.Error(msg)
@@ -39,6 +40,7 @@ func (srcP *SystemPackage) Run() error {
 			logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
 		}
 	}
+	logging.EtlLogger.Info(fmt.Sprintf("END %v", srcP.Name()))
 	return nil
 }
 

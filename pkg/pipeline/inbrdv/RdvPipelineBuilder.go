@@ -15,7 +15,7 @@ import (
 RdvPipeline is the object that holds all the information to load a single table from rdv to bdv.
 */
 type RdvPipeline struct {
-	db    *sql.DB
+	Db    *sql.DB
 	Table string
 }
 
@@ -23,11 +23,12 @@ type RdvPipeline struct {
 buildTruncator constructs the processor that truncates the targetTable in rdv
 */
 func (rdv *RdvPipeline) buildTruncator() (*processors.SQLExecutor, error) {
-	truncateQuery, err := builder.BuildTruncateTableSql("rdv", rdv.Table)
+	satCurName, _ := builder.GetRdvSatCurTableName(rdv.Table)
+	truncateQuery, err := builder.BuildTruncateTableSql("rdv", satCurName)
 	if err != nil {
 		return nil, err
 	}
-	truncator := processors.NewSQLExecutor(rdv.db, truncateQuery)
+	truncator := processors.NewSQLExecutor(rdv.Db, truncateQuery)
 	return truncator, nil
 }
 
@@ -39,7 +40,7 @@ func (rdv *RdvPipeline) buildInbReader() (*processors.SQLReader, error) {
 	if err != nil {
 		return nil, err
 	}
-	reader := processors.NewSQLReader(rdv.db, queryString)
+	reader := processors.NewSQLReader(rdv.Db, queryString)
 	reader.BatchSize = config.Config.BatchSizeReader
 	return reader, nil
 }
@@ -47,14 +48,17 @@ func (rdv *RdvPipeline) buildInbReader() (*processors.SQLReader, error) {
 /*
 buildSatCurWriter constructs the processor that writes the data into the sat_cur table
 */
-func (rdv *RdvPipeline) buildSatCurWriter() (*processors.PostgreSQLWriter, error) {
+func (rdv *RdvPipeline) buildSatCurWriter() (*processors.SQLExecutor, error) {
 	satCurTableName, err := builder.GetRdvSatCurTableName(rdv.Table)
 	if err != nil {
 		return nil, err
 	}
-	writerSatCur := processors.NewPostgreSQLWriter(rdv.db, satCurTableName)
-	writerSatCur.BatchSize = config.Config.BatchSizeWriter
-	writerSatCur.OnDupKeyUpdate = false
+	// writerSatCur := processors.NewPostgreSQLWriter(rdv.Db, fmt.Sprintf("rdv.%v", satCurTableName))
+	// writerSatCur.BatchSize = config.Config.BatchSizeWriter
+	// writerSatCur.OnDupKeyUpdate = false
+	queryString, err := builder.BuildInbRdvSatCurSelect(rdv.Table)
+	queryString = "INSERT INTO rdv." + satCurTableName + " " + queryString
+	writerSatCur := processors.NewSQLExecutor(rdv.Db, queryString)
 	return writerSatCur, nil
 }
 
@@ -66,7 +70,7 @@ func (rdv *RdvPipeline) buildSatMarkDelete() (*processors.SQLExecutor, error) {
 	if err != nil {
 		return nil, err
 	}
-	markDelete := processors.NewSQLExecutor(rdv.db, deleteQuery)
+	markDelete := processors.NewSQLExecutor(rdv.Db, deleteQuery)
 	return markDelete, nil
 }
 
@@ -78,8 +82,41 @@ func (rdv *RdvPipeline) buildSatInsertExecutor() (*processors.SQLExecutor, error
 	if err != nil {
 		return nil, err
 	}
-	satInserter := processors.NewSQLExecutor(rdv.db, query)
+	satInserter := processors.NewSQLExecutor(rdv.Db, query)
 	return satInserter, nil
+}
+
+/*
+buildExecuteAll stage to execute all and everything in Stage
+*/
+func (rdv *RdvPipeline) buildExecuteAll() (*processors.SQLExecutor, error) {
+	satCurName, _ := builder.GetRdvSatCurTableName(rdv.Table)
+	truncateQuery, err := builder.BuildTruncateTableSql("rdv", satCurName)
+	if err != nil {
+		return nil, err
+	}
+
+	satCurWriterQuery, err := builder.BuildInbRdvSatCurSelect(rdv.Table)
+	satCurWriterQuery = "INSERT INTO rdv." + satCurName + " " + satCurWriterQuery
+
+	deleteQuery, err := builder.BuildInbRdvSatDeleteQuery(rdv.Table)
+	if err != nil {
+		return nil, err
+	}
+
+	satWriterQuery, err := builder.BuildInbRdvSatInsertQuery(rdv.Table)
+	if err != nil {
+		return nil, err
+	}
+
+	truncateQuery = builder.ScriptTransactionWrapper(truncateQuery)
+	satCurWriterQuery = builder.ScriptTransactionWrapper(satCurWriterQuery)
+	deleteQuery = builder.ScriptTransactionWrapper(deleteQuery)
+	satWriterQuery = builder.ScriptTransactionWrapper(satWriterQuery)
+
+	fullQuery := fmt.Sprintf("%v %v %v %v", truncateQuery, satCurWriterQuery, deleteQuery, satWriterQuery)
+	fullExecutor := processors.NewSQLExecutor(rdv.Db, fullQuery)
+	return fullExecutor, nil
 }
 
 /*
@@ -88,35 +125,13 @@ Build constructs the pipeline for a given table.
 func (rdv *RdvPipeline) Build() (*goetl.Pipeline, error) {
 	satCurTableName, _ := builder.GetRdvSatCurTableName(rdv.Table)
 
-	// build processors
-	truncator, err := rdv.buildTruncator()
-	if err != nil || truncator == nil {
+	fullExecutor, err := rdv.buildExecuteAll()
+	if err != nil || fullExecutor == nil {
 		return nil, err
 	}
-	reader, err := rdv.buildInbReader()
-	if err != nil || reader == nil {
-		return nil, err
-	}
-	writerSatCur, err := rdv.buildSatCurWriter()
-	if err != nil || writerSatCur == nil {
-		return nil, err
-	}
-	updateDeleted, err := rdv.buildSatMarkDelete()
-	if err != nil || updateDeleted == nil {
-		return nil, err
-	}
-	satInserter, err := rdv.buildSatInsertExecutor()
-	if err != nil || satInserter == nil {
-		return nil, err
-	}
+	fullStage := goetl.NewPipelineStage(goetl.Do(fullExecutor))
 
-	// build stages in order of later usage
-	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur), goetl.Do(reader).Outputs(writerSatCur))
-	writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted))
-	updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter))
-	insertSatStage := goetl.NewPipelineStage(goetl.Do(satInserter))
-
-	layout, err := goetl.NewPipelineLayout(truncateAndReadStage, writerSatCurStage, updateSatStage, insertSatStage)
+	layout, err := goetl.NewPipelineLayout(fullStage)
 	if err != nil {
 		logging.EtlLogger.Info("Error in layout of pipeline for: " + rdv.Table + " ")
 		logging.EtlLogger.Error(err.Error())
