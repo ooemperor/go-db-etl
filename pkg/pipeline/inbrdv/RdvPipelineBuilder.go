@@ -87,6 +87,34 @@ func (rdv *RdvPipeline) buildSatInsertExecutor() (*processors.SQLExecutor, error
 }
 
 /*
+buildExecuteAll stage to execute all and everything in Stage
+*/
+func (rdv *RdvPipeline) buildExecuteAll() (*processors.SQLExecutor, error) {
+	satCurName, _ := builder.GetRdvSatCurTableName(rdv.Table)
+	truncateQuery, err := builder.BuildTruncateTableSql("rdv", satCurName)
+	if err != nil {
+		return nil, err
+	}
+
+	satCurWriterQuery, err := builder.BuildInbRdvSatCurSelect(rdv.Table)
+	satCurWriterQuery = "INSERT INTO rdv." + satCurName + " " + satCurWriterQuery
+
+	deleteQuery, err := builder.BuildInbRdvSatDeleteQuery(rdv.Table)
+	if err != nil {
+		return nil, err
+	}
+
+	satWriterQuery, err := builder.BuildInbRdvSatInsertQuery(rdv.Table)
+	if err != nil {
+		return nil, err
+	}
+
+	fullQuery := truncateQuery + " " + satCurWriterQuery + " " + deleteQuery + " " + satWriterQuery
+	fullExecutor := processors.NewSQLExecutor(rdv.Db, fullQuery)
+	return fullExecutor, nil
+}
+
+/*
 Build constructs the pipeline for a given table.
 */
 func (rdv *RdvPipeline) Build() (*goetl.Pipeline, error) {
@@ -113,19 +141,24 @@ func (rdv *RdvPipeline) Build() (*goetl.Pipeline, error) {
 	if err != nil || satInserter == nil {
 		return nil, err
 	}
+	fullExecutor, err := rdv.buildExecuteAll()
+	if err != nil || fullExecutor == nil {
+		return nil, err
+	}
 
 	// dummy selectors since executor after executor will never work
-	dummy := builder.BuildInbRdvDummySelect(rdv.Db)
-	pass2 := &processors.Passthrough{}
-	pass3 := &processors.Passthrough{}
+	//dummy := builder.BuildInbRdvDummySelect(rdv.Db)
+	//pass2 := &processors.Passthrough{}
+	//pass3 := &processors.Passthrough{}
 
 	// build stages in order of later usage
-	truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur, pass2), goetl.Do(dummy).Outputs(writerSatCur, pass2))
-	writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted, pass3), goetl.Do(pass2).Outputs(updateDeleted, pass3))
-	updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter), goetl.Do(pass3).Outputs(satInserter))
-	insertSatStage := goetl.NewPipelineStage(goetl.Do(satInserter))
+	//truncateAndReadStage := goetl.NewPipelineStage(goetl.Do(truncator).Outputs(writerSatCur, pass2), goetl.Do(dummy).Outputs(writerSatCur, pass2))
+	//writerSatCurStage := goetl.NewPipelineStage(goetl.Do(writerSatCur).Outputs(updateDeleted, pass3), goetl.Do(pass2).Outputs(updateDeleted, pass3))
+	//updateSatStage := goetl.NewPipelineStage(goetl.Do(updateDeleted).Outputs(satInserter), goetl.Do(pass3).Outputs(satInserter))
+	//insertSatStage := goetl.NewPipelineStage(goetl.Do(satInserter))
+	fullStage := goetl.NewPipelineStage(goetl.Do(fullExecutor))
 
-	layout, err := goetl.NewPipelineLayout(truncateAndReadStage, writerSatCurStage, updateSatStage, insertSatStage)
+	layout, err := goetl.NewPipelineLayout(fullStage)
 	if err != nil {
 		logging.EtlLogger.Info("Error in layout of pipeline for: " + rdv.Table + " ")
 		logging.EtlLogger.Error(err.Error())
