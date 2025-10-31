@@ -41,8 +41,8 @@ func TestScriptTransactionWrapper(t *testing.T) {
 		args args
 		want string
 	}{
-		{name: "InbPackageBuildTest1", args: args{query: "SELECT 1;"}, want: "DO $$ BEGIN SELECT 1; END $$ ;"},
-		{name: "InbPackageBuildTest2", args: args{query: "TRUNCATE TABLE public.test;"}, want: "DO $$ BEGIN TRUNCATE TABLE public.test; END $$ ;"},
+		{name: "InbPackageBuildTest1", args: args{query: "SELECT 1;"}, want: "DO $$ BEGIN SELECT 1; END $$; COMMIT;"},
+		{name: "InbPackageBuildTest2", args: args{query: "TRUNCATE TABLE public.test;"}, want: "DO $$ BEGIN TRUNCATE TABLE public.test; END $$; COMMIT;"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

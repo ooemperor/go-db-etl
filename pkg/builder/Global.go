@@ -58,6 +58,6 @@ ScriptTransactionWrapper Wraps string in transction for postgresql
 */
 func ScriptTransactionWrapper(query string) string {
 	prefix := "DO $$ BEGIN"
-	suffix := "END $$ ;"
+	suffix := "END $$; COMMIT;"
 	return fmt.Sprintf("%v %v %v", prefix, query, suffix)
 }
