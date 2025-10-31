@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"github.com/ooemperor/go-db-etl/pkg/pipeline/srcinb"
@@ -34,12 +35,19 @@ func (srcP *SystemPackage) Run() error {
 		logging.EtlLogger.Error(msg)
 		return errors.New(msg)
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(srcP.pipelines))
 	for _, tablePipeline := range srcP.pipelines {
-		c := <-tablePipeline.Run()
-		if c != nil {
-			logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
-		}
+		go func() {
+			defer wg.Done()
+			c := <-tablePipeline.Run()
+			if c != nil {
+				logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
+			}
+		}()
 	}
+	wg.Wait()
 	logging.EtlLogger.Info(fmt.Sprintf("END %v", srcP.Name()))
 	return nil
 }
