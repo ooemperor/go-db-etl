@@ -55,8 +55,11 @@ func BuildInbRdvSatDeleteQuery(tableName string) (string, error) {
 	}
 	script += fmt.Sprintf("UPDATE rdv.%s_sat ", tableName)
 	script += "SET delete_dts = NOW() "
-	script += fmt.Sprintf("WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat_cur) ", tableName)
-	script += "AND delete_dts IS NULL;"
+	script += fmt.Sprintf("FROM rdv.%s_sat AS s ", tableName)
+	script += fmt.Sprintf("LEFT JOIN rdv.%s_sat_cur AS sc on s.frh = sc.frh ", tableName)
+	script += "WHERE s.frh IS NULL;"
+	// script += fmt.Sprintf("WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat_cur) ", tableName)
+	// script += "AND delete_dts IS NULL;"
 
 	return script, nil
 }
@@ -71,8 +74,9 @@ func BuildInbRdvSatInsertQuery(tableName string) (string, error) {
 	}
 
 	script += fmt.Sprintf("INSERT INTO rdv.%s_sat ", tableName)
-	script += fmt.Sprintf("SELECT * FROM rdv.%s_sat_cur ", tableName)
-	script += fmt.Sprintf("WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat);", tableName)
+	script += fmt.Sprintf("SELECT sc.* FROM rdv.%s_sat_cur AS sc LEFT JOIN rdv.%s_sat AS s ON s.frh = sc.frh ", tableName, tableName)
+	script += "WHERE s.frh IS NULL;"
+	// script += fmt.Sprintf("WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat);", tableName)
 
 	return script, nil
 }
