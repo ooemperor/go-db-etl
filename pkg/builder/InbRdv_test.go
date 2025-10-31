@@ -68,7 +68,7 @@ func TestBuildInbRdvSatDeleteQuery(t *testing.T) {
 	// 	t.Fatalf("BuildInbRdvSatDeleteQuery incorrect: %v", query)
 	// }
 
-	if query != "UPDATE rdv.TestTable_sat SET delete_dts = NOW() FROM rdv.TestTable_sat AS s LEFT JOIN rdv.TestTable_sat_cur AS sc on s.frh = sc.frh WHERE sc.frh IS NULL AND s.delete_dts IS NULL;" {
+	if query != "UPDATE rdv.TestTable_sat s SET delete_dts = NOW() WHERE s.delete_dts IS NULL AND NOT EXISTS (SELECT 1 FROM rdv.TestTable_sat_cur sc WHERE sc.frh = s.frh);" {
 		t.Fatalf("BuildInbRdvSatDeleteQuery incorrect: %v", query)
 	}
 }

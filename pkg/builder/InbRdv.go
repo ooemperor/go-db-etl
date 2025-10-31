@@ -53,11 +53,12 @@ func BuildInbRdvSatDeleteQuery(tableName string) (string, error) {
 	if tableName == "" {
 		return "", fmt.Errorf("the tablename cannot be blank")
 	}
-	script += fmt.Sprintf("UPDATE rdv.%s_sat ", tableName)
+	script += fmt.Sprintf("UPDATE rdv.%s_sat s ", tableName)
 	script += "SET delete_dts = NOW() "
-	script += fmt.Sprintf("FROM rdv.%s_sat AS s ", tableName)
-	script += fmt.Sprintf("LEFT JOIN rdv.%s_sat_cur AS sc on s.frh = sc.frh ", tableName)
-	script += "WHERE sc.frh IS NULL AND s.delete_dts IS NULL;"
+	script += fmt.Sprintf("WHERE s.delete_dts IS NULL AND NOT EXISTS (SELECT 1 FROM rdv.%s_sat_cur sc WHERE sc.frh = s.frh);", tableName)
+	// script += fmt.Sprintf("FROM rdv.%s_sat AS s ", tableName)
+	// script += fmt.Sprintf("LEFT JOIN rdv.%s_sat_cur AS sc on s.frh = sc.frh ", tableName)
+	// script += "WHERE sc.frh IS NULL AND s.delete_dts IS NULL;"
 	// script += fmt.Sprintf("WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat_cur) ", tableName)
 	// script += "AND delete_dts IS NULL;"
 

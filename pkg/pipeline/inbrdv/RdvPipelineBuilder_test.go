@@ -140,7 +140,7 @@ func TestRdvPipeline_buildSatMarkDelete(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "SatCurDeleteTest1", fields: fields{nil, ""}, want: nil, wantErr: true},
-		{name: "SatCurDeleteTest2", fields: fields{nil, "testTableDelete"}, want: processors.NewSQLExecutor(nil, "UPDATE rdv.testTableDelete_sat SET delete_dts = NOW() FROM rdv.testTableDelete_sat AS s LEFT JOIN rdv.testTableDelete_sat_cur AS sc on s.frh = sc.frh WHERE sc.frh IS NULL AND s.delete_dts IS NULL;"), wantErr: false},
+		{name: "SatCurDeleteTest2", fields: fields{nil, "testTableDelete"}, want: processors.NewSQLExecutor(nil, "UPDATE rdv.testTableDelete_sat s SET delete_dts = NOW() WHERE s.delete_dts IS NULL AND NOT EXISTS (SELECT 1 FROM rdv.testTableDelete_sat_cur sc WHERE sc.frh = s.frh);"), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
