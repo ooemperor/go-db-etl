@@ -64,7 +64,11 @@ func TestBuildInbRdvSatDeleteQuery(t *testing.T) {
 		t.Fatalf("Error on BuildInbRdvSatDeleteQuery build: %v", err)
 	}
 
-	if query != "UPDATE rdv.TestTable_sat SET delete_dts = NOW() WHERE frh NOT IN (SELECT frh FROM rdv.TestTable_sat_cur) AND delete_dts IS NULL;" {
+	// if query != "UPDATE rdv.TestTable_sat SET delete_dts = NOW() WHERE frh NOT IN (SELECT frh FROM rdv.TestTable_sat_cur) AND delete_dts IS NULL;" {
+	// 	t.Fatalf("BuildInbRdvSatDeleteQuery incorrect: %v", query)
+	// }
+
+	if query != "UPDATE rdv.TestTable_sat s SET delete_dts = NOW() WHERE s.delete_dts IS NULL AND NOT EXISTS (SELECT 1 FROM rdv.TestTable_sat_cur sc WHERE sc.frh = s.frh);" {
 		t.Fatalf("BuildInbRdvSatDeleteQuery incorrect: %v", query)
 	}
 }
@@ -77,7 +81,11 @@ func TestBuildInbRdvSatInsertQuery(t *testing.T) {
 		t.Fatalf("Error on BuildInbRdvSatInsertQuery build: %v", err)
 	}
 
-	if query != "INSERT INTO rdv.TestTable_sat SELECT * FROM rdv.TestTable_sat_cur WHERE frh NOT IN (SELECT frh FROM rdv.TestTable_sat);" {
+	// if query != "INSERT INTO rdv.TestTable_sat SELECT * FROM rdv.TestTable_sat_cur WHERE frh NOT IN (SELECT frh FROM rdv.TestTable_sat);" {
+	// 	t.Fatalf("BuildInbRdvSatInsertQuery incorrect: %v", query)
+	// 	}
+	if query != "INSERT INTO rdv.TestTable_sat SELECT sc.* FROM rdv.TestTable_sat_cur AS sc LEFT JOIN rdv.TestTable_sat AS s ON s.frh = sc.frh WHERE s.frh IS NULL;" {
 		t.Fatalf("BuildInbRdvSatInsertQuery incorrect: %v", query)
 	}
+
 }

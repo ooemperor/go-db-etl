@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/ooemperor/go-db-etl/pkg/logging"
 	"github.com/ooemperor/go-db-etl/pkg/pipeline/inbrdv"
@@ -34,12 +35,19 @@ func (inbP *InbPackage) Run() error {
 		logging.EtlLogger.Error(msg)
 		return errors.New(msg)
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(inbP.pipelines))
 	for _, tablePipeline := range inbP.pipelines {
-		c := <-tablePipeline.Run()
-		if c != nil {
-			logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
-		}
+		go func() {
+			defer wg.Done()
+			c := <-tablePipeline.Run()
+			if c != nil {
+				logging.EtlLogger.Error(c.Error(), tablePipeline.Stats())
+			}
+		}()
 	}
+	wg.Wait()
 	logging.EtlLogger.Info(fmt.Sprintf("END %v", inbP.Name()))
 	return nil
 }
