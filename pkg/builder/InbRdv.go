@@ -57,7 +57,7 @@ func BuildInbRdvSatDeleteQuery(tableName string) (string, error) {
 	script += "SET delete_dts = NOW() "
 	script += fmt.Sprintf("FROM rdv.%s_sat AS s ", tableName)
 	script += fmt.Sprintf("LEFT JOIN rdv.%s_sat_cur AS sc on s.frh = sc.frh ", tableName)
-	script += "WHERE s.frh IS NULL;"
+	script += "WHERE sc.frh IS NULL AND s.delete_dts IS NULL;"
 	// script += fmt.Sprintf("WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat_cur) ", tableName)
 	// script += "AND delete_dts IS NULL;"
 
