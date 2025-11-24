@@ -56,7 +56,7 @@ func (sys *System) GetConnectionString() (string, error) {
 		// "postgres://username:password@localhost:5432/database_name"
 		return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", sys.Username, sys.Password, sys.Address, sys.Port, sys.Database), nil
 
-	case "mysql":
+	case "mysql", "mariadb", "innoDB":
 		cfg := mysql.NewConfig()
 		cfg.User = sys.Username
 		cfg.Passwd = sys.Password
