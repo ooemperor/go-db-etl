@@ -58,7 +58,7 @@ func (srcP *SystemPackage) Build() error {
 	connectionString, _ := srcP.system.GetConnectionString()
 	db, err := sql.Open(srcP.system.Driver, connectionString)
 	if err != nil {
-		logging.EtlLogger.Error(err.Error(), " on ConenctionString", connectionString)
+		logging.EtlLogger.Error(err.Error(), " on ConnectionString", connectionString)
 		return err
 	}
 	if srcP.target == nil {
@@ -68,7 +68,7 @@ func (srcP *SystemPackage) Build() error {
 	if err != nil {
 		logging.EtlLogger.Error(err.Error())
 	}
-	targetDb, err := sql.Open(srcP.system.Driver, targetDbConnectionString)
+	targetDb, err := sql.Open(srcP.target.Driver, targetDbConnectionString)
 	if err != nil {
 		logging.EtlLogger.Error(err.Error())
 	}

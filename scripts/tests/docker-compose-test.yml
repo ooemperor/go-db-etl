@@ -48,6 +48,19 @@ services:
     volumes:
       - sqlserver_data_src3_new:/var/opt/mssql
 
+  mysql_src4:
+    image: mysql:latest
+    container_name: mysql_src4
+    environment:
+      MYSQL_ROOT_PASSWORD: rootPassword
+      MYSQL_USER: src4Username
+      MYSQL_PASSWORD: src4Password
+      MYSQL_DATABASE: src
+    ports:
+      - "3306:3306"
+    volumes:
+      - ~/apps/mysql-src4:/var/lib/mysql
+
 volumes:
   postgres_data_target:
   postgres_data_src1:

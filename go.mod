@@ -3,6 +3,7 @@ module github.com/ooemperor/go-db-etl
 go 1.24.0
 
 require (
+	github.com/go-sql-driver/mysql v1.9.3
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
@@ -12,6 +13,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/aws/aws-sdk-go v1.44.60 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/dailyburn/bigquery v0.0.0-20171116202005-b6f18972580e // indirect
