@@ -28,14 +28,14 @@ func TestSourceTable_General(t *testing.T) {
 	})
 
 	t.Run("SourceTableSrcFilter", func(t *testing.T) {
-		if srcTable.srcFilter != "" {
-			t.Errorf("srcFilter is incorrect = %v expected: %v", srcTable.srcFilter, "")
+		if srcTable.SrcFilter != "" {
+			t.Errorf("SrcFilter is incorrect = %v expected: %v", srcTable.SrcFilter, "")
 		}
 	})
 
 	t.Run("SourceTableSrcQuery", func(t *testing.T) {
-		if srcTable.srcQuery != "" {
-			t.Errorf("srcQuery is incorrect = %v expected: %v", srcTable.srcQuery, "")
+		if srcTable.SrcQuery != "" {
+			t.Errorf("SrcQuery is incorrect = %v expected: %v", srcTable.SrcQuery, "")
 		}
 	})
 }
@@ -44,34 +44,34 @@ func TestSourceTable_General(t *testing.T) {
 TestSourceTable_GetQuery tests the cases for retreiving the queries for the table
 */
 func TestSourceTable_GetQuery(t *testing.T) {
-	srcTableFilter := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, srcFilter: "WHERE name = 'NameTest'"}
-	srcTableQuery := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, srcQuery: "Select * from public.Table1 WHERE name = 'NameTest'"}
+	srcTableFilter := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, SrcFilter: "WHERE name = 'NameTest'"}
+	srcTableQuery := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, SrcQuery: "Select * from public.Table1 WHERE name = 'NameTest'"}
 
 	t.Run("SourceTableGetSrcQueryTest1", func(t *testing.T) {
 		query := srcTableFilter.GetSrcQuery()
 		if query != "" {
-			t.Errorf("srcQuery is incorrect = %v expected: %v", query, "")
+			t.Errorf("SrcQuery is incorrect = %v expected: %v", query, "")
 		}
 	})
 
 	t.Run("SourceTableGetSrcQueryTest2", func(t *testing.T) {
 		query := srcTableQuery.GetSrcQuery()
 		if query != "Select * from public.Table1 WHERE name = 'NameTest'" {
-			t.Errorf("srcQuery is incorrect = %v expected: %v", query, "")
+			t.Errorf("SrcQuery is incorrect = %v expected: %v", query, "")
 		}
 	})
 
 	t.Run("SourceTableGetSelectFilterTest1", func(t *testing.T) {
 		query := srcTableQuery.GetSrcQuery()
 		if query != "Select * from public.Table1 WHERE name = 'NameTest'" {
-			t.Errorf("srcQuery is incorrect = %v expected: %v", query, "")
+			t.Errorf("SrcQuery is incorrect = %v expected: %v", query, "")
 		}
 	})
 }
 
 func TestSourceTable_GetSelectQuery(t *testing.T) {
-	srcTableFilter := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, srcFilter: "WHERE name = 'NameTest'"}
-	srcTableQuery := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, srcQuery: "Select * from public.Table1 WHERE name = 'NameTest' AND 1=1;"}
+	srcTableFilter := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, SrcFilter: "WHERE name = 'NameTest'"}
+	srcTableQuery := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true, SrcQuery: "Select * from public.Table1 WHERE name = 'NameTest' AND 1=1;"}
 	srcTableNormal := SourceTable{Name: "Table1", SrcSys: "sql", Enabled: true}
 	srcTableBlank := SourceTable{Name: "", SrcSys: "sql", Enabled: true}
 

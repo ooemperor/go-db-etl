@@ -48,7 +48,7 @@ func (sys *System) GetConnectionString() (string, error) {
 	switch sys.Driver {
 	case "mssql":
 		// sqlserver://username:password@host/instance?param1=value&param2=value
-		return fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s", sys.Username, sys.Password, sys.Address, sys.Port, sys.Database), nil
+		return fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s&TrustServerCertificate=true&Trusted_Connection=true", sys.Username, sys.Password, sys.Address, sys.Port, sys.Database), nil
 
 	case "postgres":
 		// "postgres://username:password@localhost:5432/database_name"
@@ -57,5 +57,4 @@ func (sys *System) GetConnectionString() (string, error) {
 	default:
 		return "", errors.New("unsupported driver")
 	}
-
 }
