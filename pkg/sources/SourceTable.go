@@ -34,7 +34,6 @@ func (st *SourceTable) GetSelectQuery() (string, error) {
 		return "", errors.New("name is required")
 	}
 	if st.GetSrcQuery() != "" {
-		fmt.Println("jup es geit")
 		return st.GetSrcQuery(), nil
 	} else if st.GetSelectFilter() != "" {
 		return fmt.Sprintf("SELECT * FROM %s %s;", st.Name, st.GetSelectFilter()), nil
