@@ -63,7 +63,6 @@ func (sys *System) GetConnectionString() (string, error) {
 		cfg.Net = "tcp"
 		cfg.Addr = fmt.Sprintf("%s:%d", sys.Address, sys.Port)
 		cfg.DBName = sys.Database
-		fmt.Print(cfg.FormatDSN())
 		return cfg.FormatDSN(), nil
 
 	default:

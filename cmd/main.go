@@ -17,7 +17,6 @@ func main() {
 		logging.EtlLogger.Error("Error building srcConfig: " + err.Error())
 	}
 
-	// TODO: INSERT pre run output here
 	runner := runner.Runner{}
 	runner.Init(srcConfig)
 	runner.Build()
