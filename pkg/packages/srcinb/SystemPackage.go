@@ -56,7 +56,7 @@ func (srcP *SystemPackage) Build() error {
 	logging.EtlLogger.Info("Building start INB pipeline for Source System " + srcP.system.Name)
 	tables, _ := srcP.system.GetActiveTables()
 	connectionString, _ := srcP.system.GetConnectionString()
-	db, err := sql.Open(srcP.system.Driver, connectionString)
+	db, err := srcP.system.GetDB()
 	if err != nil {
 		logging.EtlLogger.Error(err.Error(), " on ConnectionString", connectionString)
 		return err
@@ -73,7 +73,7 @@ func (srcP *SystemPackage) Build() error {
 		logging.EtlLogger.Error(err.Error())
 	}
 	for _, table := range tables {
-		pipeBuilder := srcinb.SrcTablePipelineBuilder{SourceDb: db, TargetDb: targetDb, Table: table}
+		pipeBuilder := srcinb.SrcTablePipelineBuilder{SourceDb: db, TargetDb: targetDb, Table: table, Driver: srcP.system.Driver, Address: connectionString}
 		pipeLine, _ := pipeBuilder.Build()
 		srcP.pipelines = append(srcP.pipelines, pipeLine)
 	}

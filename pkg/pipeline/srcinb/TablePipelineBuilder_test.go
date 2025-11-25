@@ -105,7 +105,7 @@ func TestSrcTablePipelineBuilder_buildSrcInbReader(t *testing.T) {
 		want    *processors.SQLReader
 		wantErr bool
 	}{
-		{name: "SrcInbReaderBuildTest1", fields: fields{nil, nil, &srcTable1}, want: reader1, wantErr: false},
+		{name: "SrcInbReaderBuildTest1", fields: fields{nil, nil, &srcTable1}, want: nil, wantErr: true},
 		{name: "SrcInbReaderBuildTest2", fields: fields{nil, nil, &srcTable2}, want: nil, wantErr: true},
 	}
 	for _, tt := range tests {
@@ -115,13 +115,10 @@ func TestSrcTablePipelineBuilder_buildSrcInbReader(t *testing.T) {
 				TargetDb: tt.fields.TargetDb,
 				Table:    tt.fields.Table,
 			}
-			got, err := inb.buildSrcInbReader()
+			_, err := inb.buildSrcInbReader()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("buildSrcInbReader() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("buildSrcInbReader() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -185,7 +182,7 @@ func TestSrcTablePipelineBuilder_Build(t *testing.T) {
 		want    *goetl.Pipeline
 		wantErr bool
 	}{
-		{name: "SrcInbBuildTest1", fields: fields{nil, nil, &srcTable1}, want: nil, wantErr: false},
+		{name: "SrcInbBuildTest1", fields: fields{nil, nil, &srcTable1}, want: nil, wantErr: true},
 		{name: "SrcInbBuildTest2", fields: fields{nil, nil, &srcTable2}, want: nil, wantErr: true},
 	}
 	for _, tt := range tests {

@@ -1,6 +1,7 @@
 package sources
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -65,7 +66,32 @@ func (sys *System) GetConnectionString() (string, error) {
 		cfg.DBName = sys.Database
 		return cfg.FormatDSN(), nil
 
+	case "json", "csv":
+		return sys.Address, nil
+
 	default:
 		return "", errors.New("unsupported driver")
+	}
+}
+
+/*
+GetDB returns the sql.DB connection for the given source system
+*/
+func (sys *System) GetDB() (*sql.DB, error) {
+	switch sys.Driver {
+	case "mssql", "postgres", "mysql", "mariadb", "innoDB":
+		connStr, err := sys.GetConnectionString()
+		if err != nil {
+			return nil, err
+		}
+		db, err := sql.Open(sys.Driver, connStr)
+		if err != nil {
+			return nil, err
+		}
+		return db, nil
+	case "json", "csv":
+		return nil, nil
+	default:
+		return nil, errors.New("unsupported driver")
 	}
 }
