@@ -110,7 +110,7 @@ func TestSourceSystemConnectionString(t *testing.T) {
 			t.Fatalf("Error on GetConnectionString: %v", err)
 		}
 
-		if selectSTring != "sqlserver://usernamemssql:passwordmssql@127.0.0.1:1433?database=exampleDB" {
+		if selectSTring != "sqlserver://usernamemssql:passwordmssql@127.0.0.1:1433?database=exampleDB&TrustServerCertificate=true&Trusted_Connection=true" {
 			t.Fatalf("Error on GetConnectionString: %v", selectSTring)
 		}
 	})

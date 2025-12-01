@@ -10,8 +10,8 @@ type SourceTable struct {
 	Name      string
 	SrcSys    string
 	Enabled   bool
-	srcFilter string
-	srcQuery  string
+	SrcFilter string
+	SrcQuery  string
 }
 
 /*
@@ -43,9 +43,9 @@ func (st *SourceTable) GetSelectQuery() (string, error) {
 }
 
 func (st *SourceTable) GetSelectFilter() string {
-	return st.srcFilter
+	return st.SrcFilter
 }
 
 func (st *SourceTable) GetSrcQuery() string {
-	return st.srcQuery
+	return st.SrcQuery
 }

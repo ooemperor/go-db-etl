@@ -7,6 +7,7 @@ import (
 	"github.com/ooemperor/go-db-etl/pkg/builder"
 	"github.com/ooemperor/go-db-etl/pkg/config"
 	"github.com/ooemperor/go-db-etl/pkg/logging"
+	proc "github.com/ooemperor/go-db-etl/pkg/processors"
 	"github.com/ooemperor/go-db-etl/pkg/sources"
 	"github.com/teambenny/goetl"
 	"github.com/teambenny/goetl/processors"
@@ -19,6 +20,8 @@ type SrcTablePipelineBuilder struct {
 	SourceDb *sql.DB
 	TargetDb *sql.DB
 	Table    *sources.SourceTable
+	Driver   string
+	Address  string
 }
 
 /*
@@ -47,14 +50,32 @@ func (inb *SrcTablePipelineBuilder) buildSrcInbTruncator() (*processors.SQLExecu
 /*
 buildSrcInbReader builds the reader from the source system.
 */
-func (inb *SrcTablePipelineBuilder) buildSrcInbReader() (*processors.SQLReader, error) {
+func (inb *SrcTablePipelineBuilder) buildSrcInbReader() (goetl.Processor, error) {
 	queryString, err := inb.Table.GetSelectQuery()
 	if err != nil {
 		return nil, err
 	}
-	reader := processors.NewSQLReader(inb.SourceDb, queryString)
-	reader.BatchSize = config.Config.BatchSizeReader
-	return reader, nil
+	if inb.SourceDb != nil {
+		// this is a legitimate source database
+		reader := processors.NewSQLReader(inb.SourceDb, queryString)
+		reader.BatchSize = config.Config.BatchSizeReader
+		return reader, nil
+	} else if inb.Driver == "json" {
+		reader, err := proc.NewJSONReader(inb.Address)
+		if err != nil {
+			return nil, err
+		}
+		return reader, nil
+	} else if inb.Driver == "csv" {
+		reader, err := proc.NewCSVReader(inb.Address)
+		if err != nil {
+			return nil, err
+		}
+		return reader, nil
+	} else {
+		return nil, fmt.Errorf("unsupported source type for INB reader: %s", inb.Driver)
+	}
+
 }
 
 /*

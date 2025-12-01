@@ -62,9 +62,9 @@ func (inbP *InbPackage) Build() error {
 	if err != nil {
 		logging.EtlLogger.Error(err.Error())
 	}
-	db, err := sql.Open(inbP.system.Driver, connectionString)
+	db, err := sql.Open(inbP.target.Driver, connectionString)
 	if err != nil {
-		logging.EtlLogger.Error(err.Error(), " on ConenctionString", connectionString)
+		logging.EtlLogger.Error(err.Error(), " on ConnectionString", connectionString)
 		return err
 	}
 

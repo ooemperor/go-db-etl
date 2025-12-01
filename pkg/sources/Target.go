@@ -10,6 +10,6 @@ type Target struct {
 /*
 GetConnectionString adapts to the parent method of the system.
 */
-func (t Target) GetConnectionString() (interface{}, interface{}) {
+func (t *Target) GetConnectionString() (interface{}, interface{}) {
 	return t.sys.GetConnectionString()
 }

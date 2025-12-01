@@ -1,3 +1,4 @@
+name: go-db-etl-test
 services:
   postgres:
     image: postgres:17-bookworm
@@ -17,7 +18,7 @@ services:
     ports:
       - 5001:5432
     volumes:
-      - postgres_data_src1:/var/lib/postgresql/data
+      - ~/apps/postgres-17-src1:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=src1Password
       - POSTGRES_USER=src1Username
@@ -29,7 +30,7 @@ services:
     ports:
       - 5002:5432
     volumes:
-      - postgres_data_src2:/var/lib/postgresql/data
+      - ~/apps/postgres-17-src2:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=src2Password
       - POSTGRES_USER=src2Username
@@ -45,9 +46,23 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - sqlserver_data_src3:/var/opt/mssql
+      - sqlserver_data_src3_new:/var/opt/mssql
+
+  mysql_src4:
+    image: mysql:latest
+    container_name: mysql_src4
+    environment:
+      MYSQL_ROOT_PASSWORD: rootPassword
+      MYSQL_USER: src4Username
+      MYSQL_PASSWORD: src4Password
+      MYSQL_DATABASE: src
+    ports:
+      - "3306:3306"
+    volumes:
+      - ~/apps/mysql-src4:/var/lib/mysql
 
 volumes:
+  postgres_data_target:
   postgres_data_src1:
   postgres_data_src2:
-  sqlserver_data_src3:
+  sqlserver_data_src3_new:
