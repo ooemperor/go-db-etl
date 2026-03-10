@@ -11,7 +11,7 @@ import (
 TestCases for the config
 */
 func TestConfiguration_Init(t *testing.T) {
-	config := Configuration{timeout: 10, Name: "go-db-etl", BatchSizeReader: 10000, BatchSizeWriter: 1000, EtlLogLevel: 3, RunSrcInb: true, RunInbRdv: true}
+	config := Configuration{timeout: 10, Name: "go-db-etl", BatchSizeReader: 10000, BatchSizeWriter: 1000, EtlLogLevel: 3, RunSrcInb: true, RunSrcInbParallel: false, RunInbRdv: true, RunInbRdvParallel: false, RunAdditionalComands: false}
 	tests := []struct {
 		name    string
 		want    *Configuration
