@@ -72,7 +72,6 @@ func (runner *Runner) runSrcInb() {
 			wg.Done()
 		}
 		if config.Config.RunSrcInbParallel {
-			wg.Add(1)
 			go exec()
 		} else {
 			exec()
