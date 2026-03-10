@@ -12,13 +12,16 @@ import (
 Configuration Object that holds all the necessary config information
 */
 type Configuration struct {
-	timeout         int64
-	Name            string
-	BatchSizeReader int
-	BatchSizeWriter int
-	EtlLogLevel     int
-	RunSrcInb       bool
-	RunInbRdv       bool
+	timeout              int64
+	Name                 string
+	BatchSizeReader      int
+	BatchSizeWriter      int
+	EtlLogLevel          int
+	RunSrcInb            bool
+	RunSrcInbParallel    bool
+	RunInbRdv            bool
+	RunInbRdvParallel    bool
+	RunAdditionalComands bool
 }
 
 /*
@@ -39,7 +42,10 @@ func (conf *Configuration) Init() (*Configuration, error) {
 	conf.BatchSizeWriter = int(batchWriter)
 
 	conf.RunSrcInb, _ = strconv.ParseBool(os.Getenv("RUN_SRCINB"))
+	conf.RunSrcInbParallel, _ = strconv.ParseBool(os.Getenv("RUN_SRCINB_PARALLEL"))
 	conf.RunInbRdv, _ = strconv.ParseBool(os.Getenv("RUN_INBRDV"))
+	conf.RunInbRdvParallel, _ = strconv.ParseBool(os.Getenv("RUN_INBRDV_PARALLEL"))
+	conf.RunAdditionalComands, _ = strconv.ParseBool(os.Getenv("RUN_ADDITIONAL_COMMANDS"))
 	conf.EtlLogLevel, _ = strconv.Atoi(os.Getenv("ETL_LOGLEVEL"))
 
 	return conf, nil

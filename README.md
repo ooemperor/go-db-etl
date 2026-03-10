@@ -1,6 +1,6 @@
 # go-db-etl
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GoDoc](https://godoc.org/github.com/ooemperor/go-etl?status.svg)](https://pkg.go.dev/github.com/ooemperor/go-db-etl@v1.0.0)
+[![GoDoc](https://godoc.org/github.com/ooemperor/go-etl?status.svg)](https://pkg.go.dev/github.com/ooemperor/go-db-etl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ooemperor/go-db-etl)](https://goreportcard.com/report/github.com/ooemperor/go-db-etl)
 [![GitHub release](https://img.shields.io/github/tag/ooemperor/go-db-etl.svg?label=release)](https://github.com/ooemperor/go-db-etl/releases)
 [![GitHub release date](https://img.shields.io/github/release-date/ooemperor/go-db-etl.svg)](https://github.com/ooemperor/go-db-etl/releases)

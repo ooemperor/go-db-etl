@@ -45,6 +45,18 @@ func TestSourceConfig_General(t *testing.T) {
 			t.Fatalf("length of ActiveSystems host should be 2 but got %v", len(activeSys))
 		}
 	})
+	t.Run("SourceConfig_AdditionalCommands_Test", func(t *testing.T) {
+		additionalCommands := srcConfig.GetAdditionalCommands()
+		if len(additionalCommands) != 2 {
+			t.Fatalf("length of AdditionalCommands host should be 2 but got %v", len(additionalCommands))
+		}
+		if *additionalCommands[0] != "SELECT 1" {
+			t.Fatalf("expected first additional command to be SELECT 1 but got %v", *additionalCommands[0])
+		}
+		if *additionalCommands[1] != "SELECT 2" {
+			t.Fatalf("expected second additional command to be SELECT 2 but got %v", *additionalCommands[1])
+		}
+	})
 }
 
 /*

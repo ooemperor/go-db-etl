@@ -12,8 +12,9 @@ import (
 SourceConfig definition of the struct
 */
 type SourceConfig struct {
-	SrcSys []*System
-	Target *System
+	SrcSys             []*System
+	Target             *System
+	AdditionalCommands []*string
 }
 
 /*
@@ -27,6 +28,13 @@ func (sc *SourceConfig) GetActiveSystems() []*System {
 		}
 	}
 	return activeSystems
+}
+
+/*
+GetAdditionalCommands Fetches the additional commands from the source config
+*/
+func (sc *SourceConfig) GetAdditionalCommands() []*string {
+	return sc.AdditionalCommands
 }
 
 /*

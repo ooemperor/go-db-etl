@@ -43,5 +43,9 @@
     "Driver": "postgres",
     "Address": "127.0.0.1",
     "Port": 5432
-  }
+  },
+  "AdditionalCommands": [
+    "SELECT 1",
+    "SELECT 2"
+  ]
 }

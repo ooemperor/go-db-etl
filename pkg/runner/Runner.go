@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/ooemperor/go-db-etl/pkg/config"
 	"github.com/ooemperor/go-db-etl/pkg/logging"
@@ -42,6 +43,12 @@ func (runner *Runner) Run() {
 	} else {
 		logging.EtlLogger.Info("SKIP InbRdv due to config")
 	}
+
+	if config.Config.RunSrcInb {
+		runner.RunAdditionalCommands()
+	} else {
+		logging.EtlLogger.Info("SKIP AdditionalCommands due to config")
+	}
 }
 
 /*
@@ -51,12 +58,24 @@ func (runner *Runner) runSrcInb() {
 	logging.EtlLogger.Info("START Running systems")
 	logging.EtlLogger.Info("START SrcInb")
 
+	var wg sync.WaitGroup
+	defer wg.Wait()
+	wg.Add(len(runner.srcInbPackages))
+
 	for i, srcInbPackage := range runner.srcInbPackages {
 		logging.EtlLogger.Info(fmt.Sprintf("Running srcinb for system %d %v", i, srcInbPackage.Name()))
-		err := srcInbPackage.Run()
-		if err != nil {
-			logging.EtlLogger.Error("Error running srcinb for package: " + srcInbPackage.Name())
-			continue
+		var exec = func() {
+			err := srcInbPackage.Run()
+			if err != nil {
+				logging.EtlLogger.Error("Error running srcinb for package: " + srcInbPackage.Name())
+			}
+			wg.Done()
+		}
+		if config.Config.RunSrcInbParallel {
+			wg.Add(1)
+			go exec()
+		} else {
+			exec()
 		}
 	}
 	logging.EtlLogger.Info("END SrcInb")
@@ -68,17 +87,46 @@ runInbRdv executes the prebuilt inbRdv packages
 func (runner *Runner) runInbRdv() {
 	logging.EtlLogger.Info("START InbRdv")
 
+	var wg sync.WaitGroup
+	defer wg.Wait()
+	wg.Add(len(runner.inbRdvPackages))
+
 	for i, inbRdvPack := range runner.inbRdvPackages {
 		logging.EtlLogger.Info(fmt.Sprintf("Running srcinb for system %d %v", i, inbRdvPack.Name()))
-		err := inbRdvPack.Run()
-		if err != nil {
-			logging.EtlLogger.Error("Error running srcinb for package: " + inbRdvPack.Name())
-			continue
+		var exec = func() {
+			err := inbRdvPack.Run()
+			if err != nil {
+				logging.EtlLogger.Error("Error running srcinb for package: " + inbRdvPack.Name())
+			}
+			wg.Done()
+		}
+		if config.Config.RunInbRdvParallel {
+			go exec()
+		} else {
+			exec()
 		}
 	}
 
 	logging.EtlLogger.Info("END InbRdv")
 	logging.EtlLogger.Info("END Running systems")
+}
+
+func (runner *Runner) RunAdditionalCommands() {
+	logging.EtlLogger.Info("START Additional Commands")
+	db, err := runner.sourceConfig.Target.GetDB()
+	if err != nil {
+		logging.EtlLogger.Error("Error getting DB connection for additional commands: " + err.Error())
+		return
+	}
+	logging.EtlLogger.Info(fmt.Sprintf("Running %d additional commands", len(runner.sourceConfig.AdditionalCommands)))
+	for _, cmd := range runner.sourceConfig.AdditionalCommands {
+		logging.EtlLogger.Info(fmt.Sprintf("Running additional command: %s", *cmd))
+		_, err := db.Exec(*cmd)
+		if err != nil {
+			logging.EtlLogger.Error("Error running additional command: " + *cmd + " Error: " + err.Error())
+		}
+	}
+	logging.EtlLogger.Info("END Additional Commands")
 }
 
 /*
